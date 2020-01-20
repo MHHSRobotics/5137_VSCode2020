@@ -5,6 +5,7 @@ import frc.robot.Robot; //Import Timed Robot methods (from overall robot)
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX; //Import TalonSRX motor controller 
 import com.ctre.phoenix.motorcontrol.can.VictorSPX; //Import VictorSPX motor controller
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX; //Check which motor controller would work better
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase; //Import Subsystem Class (*new this year*)
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; //Import DifferentialDrive (a way to have an arcade drive)
@@ -17,6 +18,9 @@ public class DriveBase_Subsystem extends SubsystemBase {
 	VictorSPX rightVictor1 = new VictorSPX(4);
 	VictorSPX leftVictor2 = new VictorSPX(5);
 	VictorSPX rightVictor2 = new VictorSPX(6);
+
+	//Should we use this version?
+	WPI_TalonSRX newTalon = new WPI_TalonSRX(22);
 
 	DifferentialDrive notKOP;
 
