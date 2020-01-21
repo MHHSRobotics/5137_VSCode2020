@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive; //Import DifferentialDrive
 
 public class DriveBase_Subsystem extends SubsystemBase {
 
-	public DriveBase_Subsystem() {
+	public void DriveBase_Subsystem() {
 
 	}
 
