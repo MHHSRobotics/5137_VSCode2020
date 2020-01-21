@@ -8,10 +8,12 @@
 package frc.robot;
 
 import frc.robot.subsystems.*;
+import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,19 +23,9 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
  * project.
  */
 public class Robot extends TimedRobot {
-  //Subsystems (actual object name, not class names)
-  public static Climb_Subsystem climb_Subsystem;
-  public static ControlPanel_Subsystem controlPanel_Subsystem;
-  public static DriveBase_Subsystem driveBase_Subsystem;
-  public static Intake_Subsystem intake_Subsystem;
-  public static Shooter_Subsystem shooter_Subsystem;
+  private RobotContainer robotComponents;
 
-  //OI object declaration
-  /*The OI must be created after all other subsystems. It's something to do with
-  the way FRC's code works and how it changes as it does certain things.*/
-  public static OI oi;
-
-  //After these, put object declarations (for cameras, ultrasonic, ...)
+  private Command autoCommand; //Need to use for auto? Does this act like a placeholder?
 
   //Template Declarations, CHANGES NEEDED?
   private static final String kDefaultAuto = "Default";
@@ -50,21 +42,9 @@ public class Robot extends TimedRobot {
     /*robotInit() is a method. Methods are the "what it does" part of a robot--
     everything inside the method's curly brackets is read and executed whenever the method is called
     (told by the code to do its thing). robotInit() is called first whenever the code is compiled.
-    The first thing robotInit() does is call RobotMap.init. This means it calls the method init() from
-    RobotMap. Let's head over to RobotMap.java right now to see what it's doing.*/
-    RobotMap.RobotMapInit(); //TLDR, RobotMap will declare and create all objects that are components on the robot, such as motor controllers.
-
-    //Similar to RobotMap, now we are going to create all the subsystem objects (for commands)
-    climb_Subsystem = new Climb_Subsystem();
-    controlPanel_Subsystem = new ControlPanel_Subsystem();
-    driveBase_Subsystem = new DriveBase_Subsystem();
-    intake_Subsystem = new Intake_Subsystem();
-    shooter_Subsystem = new Shooter_Subsystem();
-
-    //Don't forget OI, and it still has to go after all subsystems initialization
-    oi = new OI();
-
-    //For cameras, set defaults here (like resolution, framerate, ...)
+    The first thing robotInit() does is call RobotContainer. This means it calls the method RobotContainer(). 
+    Let's head over to it right now to see what it's doing.*/
+    robotComponents = new RobotContainer();
 
     //Default template stuff
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -97,6 +77,7 @@ public class Robot extends TimedRobot {
     to Tele-Op, Autonomous, etc.*/
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
   }
 
   /**
@@ -117,6 +98,13 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    /* Check these out
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }*/
   }
 
   /**
@@ -135,6 +123,17 @@ public class Robot extends TimedRobot {
         // Put default auto code here
         break;
     }
+  }
+
+  @Override
+  public void teleopInit() {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    //if (m_autonomousCommand != null) { //m_autonomousCommand is a command
+      //m_autonomousCommand.cancel();
+    //}
   }
 
   /**
@@ -160,5 +159,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+  @Override
+  public void disabledInit() {/**
+    * This function is called once each time the robot enters Disabled mode.
+    */
+    //TODO figure out what this is...
+  }
+
+  @Override
+  public void disabledPeriodic() {
+    //TODO figure out what this is...
   }
 }
