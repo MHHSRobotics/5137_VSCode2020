@@ -5,6 +5,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -41,12 +45,19 @@ public class RobotContainer {
     // Motor Controllers:
 
     // Drive Base
-    public static WPI_TalonSRX leftDriveTalon;
-    public static WPI_TalonSRX rightDriveTalon;
-    public static WPI_VictorSPX frontLeftTalon;
-    public static WPI_VictorSPX backLeftTalon;
-    public static WPI_VictorSPX frontRightTalon;
-    public static WPI_VictorSPX backRightTalon;
+
+    //Do I need this?
+    public static WPI_TalonSRX m_leftDriveTalon;
+    public static WPI_TalonSRX m_rightDriveTalon;
+    public static WPI_TalonSRX m_frontLeftTalon;
+    public static WPI_TalonSRX m_backLeftTalon;
+    public static WPI_TalonSRX m_frontRightTalon;
+    public static WPI_TalonSRX m_backRightTalon;
+
+    public static SpeedControllerGroup m_leftDrive;
+    public static SpeedControllerGroup m_rightDrive;
+
+    public static DifferentialDrive BMoneysDriveBase;
 
     // Shooter
     public static WPI_TalonSRX shooterTalon;
@@ -72,8 +83,8 @@ public class RobotContainer {
     // public static DigitalInput limitSwitch;
 
     /**
-    * The container for the robot. Contains subsystems, OI devices, and commands.
-    */
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
     public RobotContainer() {
         // Configure the button bindings
         // Similar to RobotMap, now we are going to create all the subsystem objects
@@ -90,9 +101,12 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureButtonBindings();
+
+        //Initiate motor controllers on the robot
+        InitMap();
     }
 
-     /**
+    /**
      * Use this method to define your button->command mappings. Buttons can be
      * created by instantiating a {@link GenericHID} or one of its subclasses
      * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
@@ -100,12 +114,7 @@ public class RobotContainer {
      * 
      * This is the exact same as OI from previous years.
      */
-        private void configureButtonBindings() {
-        // create Joystick variable name
-        final Joystick Controller; // may need to delete final if it doesn't work. Static means that the
-                                   // method/class the variable or method belongs too doesn't need to be created
-
-        // All Digital Input Buttons on XBox (names)
+    private void configureButtonBindings() {
         final JoystickButton AButton; // A
         final JoystickButton BButton; // B
         final JoystickButton XButton; // ...
@@ -126,6 +135,10 @@ public class RobotContainer {
         final POVButton drDPadButton; // Down-Right DPad
         final POVButton nDPadButton; // no press on DPad
 
+        // create Joystick variable name
+        final Joystick Controller; // may need to delete final if it doesn't work. Static means that the
+        // method/class the variable or method belongs too doesn't need to be created
+
         Controller = new Joystick(Constants.JoystickPort);
 
         // Test this, may be good for using axes
@@ -144,11 +157,23 @@ public class RobotContainer {
     }
 
     public void InitMap() {
+        /*Parameter: Joystick used in game */
         // Drive Base Moter Initialization:
-        leftDriveTalon = new WPI_TalonSRX(0);
-        // leftDriveTalon."function name()"
-        leftDriveTalon.set(ControlMode.PercentOutput, Controller.getRawAxis(1));
-        // ... (continue for other drive base motor controllers)
+        m_leftDriveTalon = new WPI_TalonSRX(1);
+        m_frontLeftTalon = new WPI_TalonSRX(2);
+        m_backLeftTalon = new WPI_TalonSRX(3);
+        m_rightDriveTalon =  new WPI_TalonSRX(4);
+        m_frontRightTalon = new WPI_TalonSRX(5);
+        m_backRightTalon = new WPI_TalonSRX(6);
+
+        m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftTalon, m_backLeftTalon); //Ports in order: 1, 2, 3
+        m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightTalon, m_backRightTalon); //4, 5, 6
+
+        BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
+
+        //Init Shooter Motors
+        //...
+
     }
 
     /**

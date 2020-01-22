@@ -9,6 +9,10 @@ package frc.robot;
 
 import frc.robot.subsystems.*;
 import frc.robot.RobotContainer;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private RobotContainer robotComponents;
+  public static RobotContainer ExistingRobot;
 
   private Command autoCommand; //Need to use for auto? Does this act like a placeholder?
 
@@ -44,7 +48,7 @@ public class Robot extends TimedRobot {
     (told by the code to do its thing). robotInit() is called first whenever the code is compiled.
     The first thing robotInit() does is call RobotContainer. This means it calls the method RobotContainer(). 
     Let's head over to it right now to see what it's doing.*/
-    robotComponents = new RobotContainer();
+    ExistingRobot = new RobotContainer();
 
     //Default template stuff
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
@@ -78,6 +82,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    final TalonSRX testTalon;
+    final ControlMode CtrlMode;
+    testTalon = new TalonSRX(1);
+    testTalon.set(ControlMode.PercentOutput, 1);
   }
 
   /**
