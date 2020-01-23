@@ -50,7 +50,8 @@ public class Robot extends TimedRobot {
     Let's head over to it right now to see what it's doing.*/
     ExistingRobot = new RobotContainer();
 
-    /*Possibly add inverted method for all motors (TODO need to test!!!)
+    /*
+    //Possibly add inverted method for all motors (TODO need to test!!!)
     ExistingRobot.m_leftDrive.setInverted(true);
     ExistingRobot.m_rightDrive.setInverted(true); */
     //Default template stuff
