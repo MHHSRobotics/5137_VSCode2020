@@ -165,21 +165,27 @@ public class RobotContainer {
         // Drive Base Moter Initialization:
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
         m_leftDriveTalon.set(ControlMode.PercentOutput, 0);
+        m_leftDriveTalon.setSafetyEnabled(true); //Used for Motor Safety Check. Need this or code won't run...
 
         m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
         m_frontLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
+        m_frontLeftVic.setSafetyEnabled(true);
 
         m_backLeftVic = new WPI_VictorSPX(Constants.bLeftDriveVictorCAN);
         m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
+        m_backLeftVic.setSafetyEnabled(true);
 
         m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); //other motor controllers will follow this controller
         m_rightDriveTalon.set(ControlMode.PercentOutput, 0);
+        m_rightDriveTalon.setSafetyEnabled(true);
 
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
         m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
+        m_frontRightVic.setSafetyEnabled(true);
 
         m_backRightVic = new WPI_VictorSPX(Constants.bRightDriveVictorCAN);
         m_backRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
+        m_backRightVic.setSafetyEnabled(true);
 
         m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftVic, m_backLeftVic); // Ports in order:
                                                                                                      // 1, 2, 3
