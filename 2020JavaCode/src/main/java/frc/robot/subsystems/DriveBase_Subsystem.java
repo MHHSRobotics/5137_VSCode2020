@@ -24,7 +24,6 @@ public class DriveBase_Subsystem extends SubsystemBase {
 	double previousDriveSpeed = 0;
 
 	public void DriveBase_Subsystem() {
-
 	}
 
 	@Override

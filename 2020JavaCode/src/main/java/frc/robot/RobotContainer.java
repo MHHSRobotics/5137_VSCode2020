@@ -192,6 +192,7 @@ public class RobotContainer {
         m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightVic, m_backRightVic); // 4, 5, 6
 
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
+        BMoneysDriveBase.setSafetyEnabled(true);
 
         // Init Shooter Motors
         // ...
