@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj.Watchdog;
+
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 
@@ -46,13 +48,13 @@ public class RobotContainer {
 
     // Drive Base
 
-    //Do I need this?
+    // Do I need this?
     public static WPI_TalonSRX m_leftDriveTalon;
     public static WPI_TalonSRX m_rightDriveTalon;
-    public static WPI_TalonSRX m_frontLeftTalon;
-    public static WPI_TalonSRX m_backLeftTalon;
-    public static WPI_TalonSRX m_frontRightTalon;
-    public static WPI_TalonSRX m_backRightTalon;
+    public static WPI_VictorSPX m_frontLeftVic;
+    public static WPI_VictorSPX m_backLeftVic;
+    public static WPI_VictorSPX m_frontRightVic;
+    public static WPI_VictorSPX m_backRightVic;
 
     public static SpeedControllerGroup m_leftDrive;
     public static SpeedControllerGroup m_rightDrive;
@@ -82,6 +84,32 @@ public class RobotContainer {
     // Limit Switches
     // public static DigitalInput limitSwitch;
 
+    public static JoystickButton AButton; // A
+    public static JoystickButton BButton; // B
+    public static JoystickButton XButton; // ...
+    public static JoystickButton YButton;
+    public static JoystickButton SelectButton;
+    public static JoystickButton StartButton;
+    public static JoystickButton LBButton; // Left bumper button
+    public static JoystickButton RBButton; // ...
+
+    // DPad Buttons (names)
+    public static POVButton uDPadButton; // Up DPad
+    public static POVButton dDPadButton; // Down DPad
+    public static POVButton lDPadButton; // Left DPad
+    public static POVButton rDPadButton; // Right DPad
+    public static POVButton ulDPadButton; // Up-Left DPad
+    public static POVButton urDPadButton; // Up-Right DPad
+    public static POVButton dlDPadButton; // Down-Left DPad
+    public static POVButton drDPadButton; // Down-Right DPad
+    public static POVButton nDPadButton; // no press on DPad
+
+    // create Joystick variable name
+    public static Joystick XBoxController; // may need to delete final if it doesn't work. Static means that the
+    // method/class the variable or method belongs too doesn't need to be created
+
+    //Motor safety watchdog
+    Watchdog watchdog;
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -102,8 +130,11 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-        //Initiate motor controllers on the robot
+        // Initiate motor controllers on the robot
         InitMap();
+
+        //For motor safety error
+        //watchdog.enable();
     }
 
     /**
@@ -115,64 +146,49 @@ public class RobotContainer {
      * This is the exact same as OI from previous years.
      */
     private void configureButtonBindings() {
-        final JoystickButton AButton; // A
-        final JoystickButton BButton; // B
-        final JoystickButton XButton; // ...
-        final JoystickButton YButton;
-        final JoystickButton SelectButton;
-        final JoystickButton StartButton;
-        final JoystickButton LBButton; // Left bumper button
-        final JoystickButton RBButton; // ...
 
-        // DPad Buttons (names)
-        final POVButton uDPadButton; // Up DPad
-        final POVButton dDPadButton; // Down DPad
-        final POVButton lDPadButton; // Left DPad
-        final POVButton rDPadButton; // Right DPad
-        final POVButton ulDPadButton; // Up-Left DPad
-        final POVButton urDPadButton; // Up-Right DPad
-        final POVButton dlDPadButton; // Down-Left DPad
-        final POVButton drDPadButton; // Down-Right DPad
-        final POVButton nDPadButton; // no press on DPad
+        XBoxController = new Joystick(Constants.JoystickPort);
 
-        // create Joystick variable name
-        final Joystick Controller; // may need to delete final if it doesn't work. Static means that the
-        // method/class the variable or method belongs too doesn't need to be created
-
-        Controller = new Joystick(Constants.JoystickPort);
-
-        // Test this, may be good for using axes
-        if (Controller.getRawAxis(Constants.LTAxisPort) > .70) {
+        /* Test this, may be good for using axes
+        if (XBoxController.getRawAxis(Constants.LTAxisPort) > .70) {
             new RotationalControl_Command();
-        }
+        }*/
 
         // Sets A button from Joystick Controller to Positional Control Command
-        AButton = new JoystickButton(Controller, Constants.AButtonPort);
-        AButton.whenPressed(new PositionalControl_Command());
-
-        // Sets B Button to Rotational Control Command
-        BButton = new JoystickButton(Controller, Constants.BButtonPort);
-        BButton.whenPressed(new RotationalControl_Command());
+        //AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
+        //AButton.whenPressed(new PositionalControl_Command());
 
     }
 
     public void InitMap() {
-        /*Parameter: Joystick used in game */
+        /* Parameter: Joystick used in game */
         // Drive Base Moter Initialization:
-        m_leftDriveTalon = new WPI_TalonSRX(1);
-        m_frontLeftTalon = new WPI_TalonSRX(2);
-        m_backLeftTalon = new WPI_TalonSRX(3);
-        m_rightDriveTalon =  new WPI_TalonSRX(4);
-        m_frontRightTalon = new WPI_TalonSRX(5);
-        m_backRightTalon = new WPI_TalonSRX(6);
+        m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
+        m_leftDriveTalon.set(ControlMode.PercentOutput, 0);
 
-        m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftTalon, m_backLeftTalon); //Ports in order: 1, 2, 3
-        m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightTalon, m_backRightTalon); //4, 5, 6
+        m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
+        m_frontLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
+
+        m_backLeftVic = new WPI_VictorSPX(Constants.bLeftDriveVictorCAN);
+        m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
+
+        m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); //other motor controllers will follow this controller
+        m_rightDriveTalon.set(ControlMode.PercentOutput, 0);
+
+        m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
+        m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
+
+        m_backRightVic = new WPI_VictorSPX(Constants.bRightDriveVictorCAN);
+        m_backRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
+
+        m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftVic, m_backLeftVic); // Ports in order:
+                                                                                                     // 1, 2, 3
+        m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightVic, m_backRightVic); // 4, 5, 6
 
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
 
-        //Init Shooter Motors
-        //...
+        // Init Shooter Motors
+        // ...
 
     }
 
@@ -185,4 +201,13 @@ public class RobotContainer {
         // An ExampleCommand will run in autonomous
         return m_autoCommand;
     }
+    /*
+    m_leftDriveTalon.setExpiration(Constants.expirationTime);
+        m_frontLeftVic.setExpiration(Constants.expirationTime);
+        m_backLeftVic.setExpiration(Constants.expirationTime);
+        m_rightDriveTalon.setExpiration(Constants.expirationTime);
+        m_frontRightVic.setExpiratio
+        n(Constants.expirationTime);
+        m_backRightVic.setExpiration(Constants.expirationTime);
+    */
 }

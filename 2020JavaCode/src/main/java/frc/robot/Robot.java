@@ -82,10 +82,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    final TalonSRX testTalon;
-    final ControlMode CtrlMode;
-    testTalon = new TalonSRX(1);
-    testTalon.set(ControlMode.PercentOutput, 1);
   }
 
   /**
