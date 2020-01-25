@@ -36,8 +36,8 @@ public final class Constants {
     public final static double minSpeed = 0.5; 
     public final static double maxSpeed = 1.0;
     public final static int accelFactor = 1;
-    public final static double driveSensitivity = 1.5;
-    public final static double turnSensitivity = 1.5;
+    public final static double driveSensitivity = 1.0; //bigger # means less sensitivity, from 0.5 to 2.0
+    public final static double turnSensitivity = 1.0;
     //Used for ...
 
 

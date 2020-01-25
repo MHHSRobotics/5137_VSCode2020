@@ -117,6 +117,11 @@ public class RobotContainer {
         // Configure the button bindings
         // Similar to RobotMap, now we are going to create all the subsystem objects
         // (for commands)
+        InitMap();
+
+        // Configure the button bindings
+        configureButtonBindings();
+        
         climb_Subsystem = new Climb_Subsystem();
         controlPanel_Subsystem = new ControlPanel_Subsystem();
         driveBase_Subsystem = new DriveBase_Subsystem();
@@ -127,12 +132,10 @@ public class RobotContainer {
 
         // For cameras, set defaults here (like resolution, framerate, ...)
 
-        // Configure the button bindings
-        configureButtonBindings();
+        
+        
 
-        // Initiate motor controllers on the robot
-        InitMap();
-
+        System.out.println("Robot is init...");
         //For motor safety error
         //watchdog.enable();
     }
@@ -165,34 +168,27 @@ public class RobotContainer {
         // Drive Base Moter Initialization:
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
         m_leftDriveTalon.set(ControlMode.PercentOutput, 0);
-        m_leftDriveTalon.setSafetyEnabled(true); //Used for Motor Safety Check. Need this or code won't run...
 
         m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
         m_frontLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
-        m_frontLeftVic.setSafetyEnabled(true);
 
         m_backLeftVic = new WPI_VictorSPX(Constants.bLeftDriveVictorCAN);
         m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
-        m_backLeftVic.setSafetyEnabled(true);
 
         m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); //other motor controllers will follow this controller
         m_rightDriveTalon.set(ControlMode.PercentOutput, 0);
-        m_rightDriveTalon.setSafetyEnabled(true);
 
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
         m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
-        m_frontRightVic.setSafetyEnabled(true);
 
         m_backRightVic = new WPI_VictorSPX(Constants.bRightDriveVictorCAN);
         m_backRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
-        m_backRightVic.setSafetyEnabled(true);
 
         m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftVic, m_backLeftVic); // Ports in order:
                                                                                                      // 1, 2, 3
         m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightVic, m_backRightVic); // 4, 5, 6
 
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
-        BMoneysDriveBase.setSafetyEnabled(true);
 
         // Init Shooter Motors
         // ...

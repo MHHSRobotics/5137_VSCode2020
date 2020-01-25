@@ -15,23 +15,37 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; //Import DifferentialDrive (a way to have an arcade drive)
 
 public class DriveBase_Subsystem extends SubsystemBase {
-	SpeedControllerGroup m_leftDrive = RobotContainer.m_leftDrive;
-	SpeedControllerGroup m_rightDrive = RobotContainer.m_rightDrive;
-	DifferentialDrive BMoneysDifferentialDrive = RobotContainer.BMoneysDriveBase;
+	DifferentialDrive BMoneysDifferentialDrive;
 
-	double newDriveSpeed = 0;
-	double actualDriveSpeed = 0;
-	double previousDriveSpeed = 0;
+	SpeedControllerGroup m_leftDrive;
+	SpeedControllerGroup m_rightDrive;
 
-	public void DriveBase_Subsystem() {
+	Joystick XBoxController;
+
+	double newDriveSpeed;
+	double actualDriveSpeed;
+	double previousDriveSpeed;
+
+	public DriveBase_Subsystem() {
+		BMoneysDifferentialDrive = RobotContainer.BMoneysDriveBase;
+
+		m_leftDrive = RobotContainer.m_leftDrive;
+		m_rightDrive = RobotContainer.m_rightDrive;
+
+		XBoxController = RobotContainer.XBoxController;
+
+		newDriveSpeed = 0;
+		actualDriveSpeed = 0;
+		previousDriveSpeed = 0;
 	}
 
 	@Override
 	public void periodic() {
-		//This method will be called once per scheduler run
+		// This method will be called once per scheduler run
+		rampArcadeDrive(XBoxController);
 	}
 
-	public void initDefaultCommand() { 
+	public void initDefaultCommand() {
 		setDefaultCommand(new ArcadeDrive());
 	}
 
@@ -43,66 +57,67 @@ public class DriveBase_Subsystem extends SubsystemBase {
 			adjustedJoystick = ((1 / (1 - deadZone)) * (joystick - deadZone));
 		}
 		return adjustedJoystick;
-		//	An algorithm developed by the fantastic Sarah C. Lincoln that adjusts the joysticks
-		//	to run scaled to the deadZone
+		// An algorithm developed by the fantastic Sarah C. Lincoln that adjusts the
+		// joysticks
+		// to run scaled to the deadZone
 	}
 
 	public void rampArcadeDrive(Joystick XBoxController) {
 		double driveValue = XBoxController.getRawAxis(Constants.LYStickAxisPort);
-		System.out.println("LYStick Value: " + driveValue);
+		//System.out.println("LYStick Value: " + driveValue);
 		double turnValue = XBoxController.getRawAxis(Constants.RXStickAxisPort);
-		System.out.println("RXStickAxisPort: " + turnValue);
+		//System.out.println("RXStick Value: " + turnValue);
 
-		newDriveSpeed = accelerate(driveValue, Constants.minSpeed, Constants.maxSpeed, previousDriveSpeed, Constants.accelFactor);
+		newDriveSpeed = accelerate(driveValue, Constants.minSpeed,
+		Constants.maxSpeed, previousDriveSpeed, Constants.accelFactor);
 		actualDriveSpeed = newDriveSpeed;
 		previousDriveSpeed = actualDriveSpeed;
 
-		BMoneysDifferentialDrive.arcadeDrive(newDriveSpeed/Constants.driveSensitivity, turnValue/Constants.turnSensitivity);
+		BMoneysDifferentialDrive.arcadeDrive(-driveValue  / Constants.driveSensitivity, //change back to newDriveSpeed
+				turnValue / Constants.turnSensitivity); 
 	}
 
-	public double accelerate(double driveValue, double minSpeed, double maxSpeed, double previousSpeed, double accelFactor) { //NEEDS TO BE TESTED
+	public double accelerate(double driveValue, double minSpeed, double maxSpeed, double previousSpeed, double accelFactor) { // NEEDS TO BE TESTED
 		double newSpeed;
-
-		//effectively keeps the speed variable depended in motor control the same if controller goes in 
-		if (Math.abs(driveValue) > minSpeed && Math.abs(previousSpeed) <  maxSpeed) {
-			newSpeed = Math.signum(driveValue) *  driveValue; 
-			//Signum returns 1 if value is >0, 0 if = 0, and -1 if <0
-		}
-		else {
+		System.out.println("Joystick Value: " + driveValue);
+		 
+		// effectively keeps the speed variable depended in motor control the same if
+		// controller goes in
+		if (Math.abs(driveValue) > minSpeed && Math.abs(previousSpeed) < maxSpeed) {
+			newSpeed = Math.signum(driveValue) * driveValue;
+			// Signum returns 1 if value is >0, 0 if = 0, and -1 if <0
+		} else {
 			newSpeed = previousSpeed;
 		}
-		
-		//Acceleration factor
+
+		// Acceleration factor
 		if (previousSpeed < driveValue) {
 			newSpeed += accelFactor;
-		}
-		else if (previousSpeed > driveValue) {
+		} else if (previousSpeed > driveValue) {
 			newSpeed -= accelFactor;
-		}
-		else {
-			newSpeed = previousSpeed; //necessary??
+		} else {
+			newSpeed = previousSpeed; // necessary??
 		}
 
-		//Catch 21 situation
+		// Catch 21 situation
 		try {
 			Thread.sleep(Constants.delay);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 
 		}
 
 		return newSpeed;
 	}
 
-	public void drivePivot(double speed) { //TODO may need to make this negative
+	public void drivePivot(double speed) { // TODO may need to make this negative
 		BMoneysDifferentialDrive.arcadeDrive(0, speed);
 	}
 
 	public void driveStraight(double speed) {
-		BMoneysDifferentialDrive.arcadeDrive(speed,0);
+		BMoneysDifferentialDrive.arcadeDrive(speed, 0);
 	}
 
 	public void stop() {
-		BMoneysDifferentialDrive.arcadeDrive(0,0);
+		BMoneysDifferentialDrive.arcadeDrive(0, 0);
 	}
 }

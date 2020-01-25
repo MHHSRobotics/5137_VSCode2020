@@ -48,9 +48,11 @@ public class Robot extends TimedRobot {
     (told by the code to do its thing). robotInit() is called first whenever the code is compiled.
     The first thing robotInit() does is call RobotContainer. This means it calls the method RobotContainer(). 
     Let's head over to it right now to see what it's doing.*/
+    System.out.println("Created RobotContainer.");
     ExistingRobot = new RobotContainer();
 
-    /*Possibly add inverted method for all motors (TODO need to test!!!)
+    /*
+    //Possibly add inverted method for all motors (TODO need to test!!!)
     ExistingRobot.m_leftDrive.setInverted(true);
     ExistingRobot.m_rightDrive.setInverted(true); */
     //Default template stuff
