@@ -24,21 +24,29 @@ public final class Constants {
     public final static int RXStickAxisPort = 4;
     public final static int RYStickAxisPort = 5;
     //---------------------------------------//
+    //Drive Base
     public final static int leftDriveTalonCAN = 1;
     public final static int rightDriveTalonCAN = 2;
     public final static int fLeftDriveVictorCAN = 3;
     public final static int fRightDriveVictorCAN = 4;
     public final static int bLeftDriveVictorCAN = 5;
     public final static int bRightDriveVictorCAN = 6;
+    //Control Panel
+    public final static int controlPanelCAN = 7;
     //---------------------------------------//
+    //accelerate() method (not currently being used)
     public final static double expirationTime = 0.5;
     public final static int delay = 25; //used for accelerate() method to delay the method by 25 ms
     public final static double minSpeed = 0.5; 
     public final static double maxSpeed = 1.0;
     public final static int accelFactor = 1;
+    //---------------------------------------//
     public final static double driveSensitivity = 1.0; //bigger # means less sensitivity, from 0.5 to 2.0
-    public final static double turnSensitivity = 1.0;
+    public final static double turnSensitivity = 1.5;
+    public final static boolean isQuickTurn = true; //makes turning the drive base able to override constant-curvature turning for turn-in-place maneuvers.
     //Used for ...
+    //---------------------------------------//
+
 
 
 }

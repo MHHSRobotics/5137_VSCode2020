@@ -4,10 +4,6 @@ package frc.robot.subsystems;
 import frc.robot.RobotContainer; //Import Timed Robot methods (from overall robot)
 import frc.robot.Constants;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.Robot;
-
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX; //Check which motor controller would work better (WPI Talons v. Talons)
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase; //Import Subsystem Class (*new this year*)
 import edu.wpi.first.wpilibj.Joystick;
@@ -68,46 +64,23 @@ public class DriveBase_Subsystem extends SubsystemBase {
 		double turnValue = XBoxController.getRawAxis(Constants.RXStickAxisPort);
 		//System.out.println("RXStick Value: " + turnValue);
 
+		/*
 		newDriveSpeed = accelerate(driveValue, Constants.minSpeed,
 		Constants.maxSpeed, previousDriveSpeed, Constants.accelFactor);
 		actualDriveSpeed = newDriveSpeed;
-		previousDriveSpeed = actualDriveSpeed;
+		previousDriveSpeed = actualDriveSpeed; */
 
-		BMoneysDifferentialDrive.arcadeDrive(-driveValue  / Constants.driveSensitivity, //change back to newDriveSpeed
-				turnValue / Constants.turnSensitivity); 
+		//BMoneysDifferentialDrive.arcadeDrive(-driveValue / Constants.driveSensitivity, turnValue / Constants.turnSensitivity); //non-car drive
+
+		BMoneysDifferentialDrive.curvatureDrive(-driveValue / Constants.driveSensitivity, turnValue / Constants.turnSensitivity, Constants.isQuickTurn);
 	}
 
-	public double accelerate(double driveValue, double minSpeed, double maxSpeed, double previousSpeed, double accelFactor) { // NEEDS TO BE TESTED
+	/*public double accelerate(double driveValue, double minSpeed, double maxSpeed, double previousSpeed, double accelFactor) { // NEEDS TO BE TESTED
 		double newSpeed;
-		System.out.println("Joystick Value: " + driveValue);
 		 
-		// effectively keeps the speed variable depended in motor control the same if
-		// controller goes in
-		if (Math.abs(driveValue) > minSpeed && Math.abs(previousSpeed) < maxSpeed) {
-			newSpeed = Math.signum(driveValue) * driveValue;
-			// Signum returns 1 if value is >0, 0 if = 0, and -1 if <0
-		} else {
-			newSpeed = previousSpeed;
-		}
-
-		// Acceleration factor
-		if (previousSpeed < driveValue) {
-			newSpeed += accelFactor;
-		} else if (previousSpeed > driveValue) {
-			newSpeed -= accelFactor;
-		} else {
-			newSpeed = previousSpeed; // necessary??
-		}
-
-		// Catch 21 situation
-		try {
-			Thread.sleep(Constants.delay);
-		} catch (InterruptedException e) {
-
-		}
-
+		
 		return newSpeed;
-	}
+	} */
 
 	public void drivePivot(double speed) { // TODO may need to make this negative
 		BMoneysDifferentialDrive.arcadeDrive(0, speed);

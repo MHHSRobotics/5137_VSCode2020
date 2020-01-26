@@ -164,7 +164,7 @@ public class RobotContainer {
     }
 
     public void InitMap() {
-        /* Parameter: Joystick used in game */
+
         // Drive Base Moter Initialization:
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
         m_leftDriveTalon.set(ControlMode.PercentOutput, 0);
@@ -191,7 +191,10 @@ public class RobotContainer {
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
 
         // Init Shooter Motors
-        // ...
+        
+        // Init ControlPanel Motors
+        controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
+        controlPanelVictor.set(ControlMode.PercentOutput, 0);
 
     }
 
