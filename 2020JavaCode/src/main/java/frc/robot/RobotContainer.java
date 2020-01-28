@@ -3,16 +3,19 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj.Watchdog;
 
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
@@ -40,15 +43,11 @@ public class RobotContainer {
     public static Intake_Subsystem intake_Subsystem;
     public static Shooter_Subsystem shooter_Subsystem;
 
-    public static Command m_autoCommand;
-
     // After these, put object declarations (for cameras, ultrasonic, ...)
 
     // Motor Controllers:
 
     // Drive Base
-
-    // Do I need this?
     public static WPI_TalonSRX m_leftDriveTalon;
     public static WPI_TalonSRX m_rightDriveTalon;
     public static WPI_VictorSPX m_frontLeftVic;
@@ -84,6 +83,10 @@ public class RobotContainer {
     // Limit Switches
     // public static DigitalInput limitSwitch;
 
+    //Sensors
+    public static ColorSensorV3 colorSensor;
+    public static I2C.Port i2cPort = I2C.Port.kOnboard;
+
     public static JoystickButton AButton; // A
     public static JoystickButton BButton; // B
     public static JoystickButton XButton; // ...
@@ -105,11 +108,11 @@ public class RobotContainer {
     public static POVButton nDPadButton; // no press on DPad
 
     // create Joystick variable name
-    public static Joystick XBoxController; // may need to delete final if it doesn't work. Static means that the
-    // method/class the variable or method belongs too doesn't need to be created
+    public static Joystick XBoxController; //Static means that the method/class the variable or method belongs too doesn't need to be created
 
-    //Motor safety watchdog
-    Watchdog watchdog;
+    //create SmartDashboard name
+    public static SmartDashboard smartDashboard;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -133,11 +136,6 @@ public class RobotContainer {
         // For cameras, set defaults here (like resolution, framerate, ...)
 
         
-        
-
-        System.out.println("Robot is init...");
-        //For motor safety error
-        //watchdog.enable();
     }
 
     /**
@@ -161,13 +159,16 @@ public class RobotContainer {
         //AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
         //AButton.whenPressed(new PositionalControl_Command());
 
+        BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+        BButton.whenPressed(new ControlPanel_Command());
+
     }
 
     public void InitMap() {
 
         // Drive Base Moter Initialization:
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
-        m_leftDriveTalon.set(ControlMode.PercentOutput, 0);
+        m_leftDriveTalon.set(ControlMode.Current, 0);
 
         m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
         m_frontLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
@@ -176,7 +177,7 @@ public class RobotContainer {
         m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
 
         m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); //other motor controllers will follow this controller
-        m_rightDriveTalon.set(ControlMode.PercentOutput, 0);
+        m_rightDriveTalon.set(ControlMode.Current, 0);
 
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
         m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
@@ -194,7 +195,10 @@ public class RobotContainer {
         
         // Init ControlPanel Motors
         controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
-        controlPanelVictor.set(ControlMode.PercentOutput, 0);
+        controlPanelVictor.set(ControlMode.Velocity, 0);
+
+        //Sensor Init
+        colorSensor = new ColorSensorV3(i2cPort);
 
     }
 
@@ -203,17 +207,10 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
+    //public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_autoCommand;
-    }
-    /*
-    m_leftDriveTalon.setExpiration(Constants.expirationTime);
-        m_frontLeftVic.setExpiration(Constants.expirationTime);
-        m_backLeftVic.setExpiration(Constants.expirationTime);
-        m_rightDriveTalon.setExpiration(Constants.expirationTime);
-        m_frontRightVic.setExpiratio
-        n(Constants.expirationTime);
-        m_backRightVic.setExpiration(Constants.expirationTime);
-    */
+        //Command m_autoCommand = ;
+        //return m_autoCommand;
+    //}
+    
 }

@@ -1,4 +1,7 @@
 package frc.robot;
+
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 /*
 Class to provide place for robot-wide numerical or boolean constants.
 Declare all constants globally.
@@ -41,11 +44,13 @@ public final class Constants {
     public final static double maxSpeed = 1.0;
     public final static int accelFactor = 1;
     //---------------------------------------//
-    public final static double driveSensitivity = 1.0; //bigger # means less sensitivity, from 0.5 to 2.0
-    public final static double turnSensitivity = 1.5;
+    public final static double driveSensitivity = 2.0; //bigger # means less sensitivity, from 0.5 to 2.0
+    //10.0: baby speed, 9.0: tdddler mode, 7.0: fast toddler mode, 5.0: optimal turn speed, 4.5:
+    public final static double turnSensitivity = 4.0; //4.5 seems nice
     public final static boolean isQuickTurn = true; //makes turning the drive base able to override constant-curvature turning for turn-in-place maneuvers.
     //Used for ...
     //---------------------------------------//
+    public final static double cpVelocity = 2.0;
 
 
 

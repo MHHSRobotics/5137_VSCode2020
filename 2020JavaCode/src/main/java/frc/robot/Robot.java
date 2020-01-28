@@ -10,12 +10,15 @@ package frc.robot;
 import frc.robot.subsystems.*;
 import frc.robot.RobotContainer;
 
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -87,6 +90,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    senseColor();
   }
 
   /**
@@ -179,5 +184,15 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     //TODO figure out what this is...
+  }
+
+  public void senseColor() {
+    Color detectedColor = RobotContainer.colorSensor.getColor();
+    double IR = RobotContainer.colorSensor.getIR();
+
+    RobotContainer.smartDashboard.putNumber("Red", detectedColor.red);
+    RobotContainer.smartDashboard.putNumber("Green", detectedColor.green);
+    RobotContainer.smartDashboard.putNumber("Blue", detectedColor.blue);
+    RobotContainer.smartDashboard.putNumber("IR", IR);
   }
 }

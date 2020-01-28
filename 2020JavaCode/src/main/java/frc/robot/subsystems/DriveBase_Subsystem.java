@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase; //Import Subsystem Class (*
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; //Import DifferentialDrive (a way to have an arcade drive)
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class DriveBase_Subsystem extends SubsystemBase {
 	DifferentialDrive BMoneysDifferentialDrive;
@@ -65,14 +66,18 @@ public class DriveBase_Subsystem extends SubsystemBase {
 		//System.out.println("RXStick Value: " + turnValue);
 
 		/*
-		newDriveSpeed = accelerate(driveValue, Constants.minSpeed,
-		Constants.maxSpeed, previousDriveSpeed, Constants.accelFactor);
-		actualDriveSpeed = newDriveSpeed;
-		previousDriveSpeed = actualDriveSpeed; */
+			newDriveSpeed = accelerate(driveValue, Constants.minSpeed,
+			Constants.maxSpeed, previousDriveSpeed, Constants.accelFactor);
+			actualDriveSpeed = newDriveSpeed;
+			previousDriveSpeed = actualDriveSpeed; 
+		*/
 
+		//want to add if statement here to have configs
 		//BMoneysDifferentialDrive.arcadeDrive(-driveValue / Constants.driveSensitivity, turnValue / Constants.turnSensitivity); //non-car drive
 
 		BMoneysDifferentialDrive.curvatureDrive(-driveValue / Constants.driveSensitivity, turnValue / Constants.turnSensitivity, Constants.isQuickTurn);
+		System.out.println("LeftTalon running at: A" + RobotContainer.m_leftDriveTalon.getSupplyCurrent());
+		System.out.println("RightTalon running at: A" + RobotContainer.m_rightDriveTalon.getSupplyCurrent()); //IDK about victors
 	}
 
 	/*public double accelerate(double driveValue, double minSpeed, double maxSpeed, double previousSpeed, double accelFactor) { // NEEDS TO BE TESTED
