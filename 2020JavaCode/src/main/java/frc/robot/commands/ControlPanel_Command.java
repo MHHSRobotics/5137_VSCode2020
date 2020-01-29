@@ -1,5 +1,8 @@
 package frc.robot.commands;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -23,12 +26,13 @@ public class ControlPanel_Command extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
     if (DriverStation.getInstance().getGameSpecificMessage().length() > 0) { //Stage 2 automatic method
       RobotContainer.controlPanel_Subsystem.controlPosition(Constants.cpVelocity);
     }
     else { //Stage 1 automatic method
       RobotContainer.controlPanel_Subsystem.controlRotation(Constants.cpVelocity);
-    }
+    } 
   }
 
   // Called once the command ends or is interrupted.

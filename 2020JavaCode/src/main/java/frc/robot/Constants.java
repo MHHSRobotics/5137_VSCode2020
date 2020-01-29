@@ -2,12 +2,17 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
+import frc.robot.RobotContainer;
 /*
 Class to provide place for robot-wide numerical or boolean constants.
 Declare all constants globally.
 Also, statically import the class/inner classes wherever the constants are needed, to reduce verbosity.
 */
 public final class Constants {
+    public final static double PI = 3.1415;
+    public final static double CPWheelCircum = 25.1; //8P inches
+    public final static double SpinWheel = 3.5;
+    //---------------------------------------//
     //Used for OI
     public final static int JoystickPort = 0;
     //---------------------------------------//
@@ -50,8 +55,7 @@ public final class Constants {
     public final static boolean isQuickTurn = true; //makes turning the drive base able to override constant-curvature turning for turn-in-place maneuvers.
     //Used for ...
     //---------------------------------------//
-    public final static double cpVelocity = 2.0;
-
+    public final static double cpVelocity = 2.0; //test velocity variable (since gearbox screws with it)
 
 
 }

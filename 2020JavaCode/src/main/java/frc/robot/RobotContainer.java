@@ -123,10 +123,11 @@ public class RobotContainer {
         InitMap();
 
         // Configure the button bindings
+        controlPanel_Subsystem = new ControlPanel_Subsystem();
         configureButtonBindings();
         
         climb_Subsystem = new Climb_Subsystem();
-        controlPanel_Subsystem = new ControlPanel_Subsystem();
+    
         driveBase_Subsystem = new DriveBase_Subsystem();
         intake_Subsystem = new Intake_Subsystem();
         shooter_Subsystem = new Shooter_Subsystem();
@@ -161,7 +162,8 @@ public class RobotContainer {
 
         BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
         BButton.whenPressed(new ControlPanel_Command());
-
+        
+        
     }
 
     public void InitMap() {
