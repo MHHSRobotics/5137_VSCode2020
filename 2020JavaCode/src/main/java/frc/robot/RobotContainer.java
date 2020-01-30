@@ -10,8 +10,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -112,6 +113,8 @@ public class RobotContainer {
 
     //create SmartDashboard name
     public static SmartDashboard smartDashboard;
+    public static ShuffleboardTab diagnosticTab;
+    public static ShuffleboardTab liveWindowTab;
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -168,6 +171,11 @@ public class RobotContainer {
 
     public void InitMap() {
 
+        //Shuffle Board initialization:
+        diagnosticTab = Shuffleboard.getTab("Diagnostics");
+        liveWindowTab = Shuffleboard.getTab("Live Window");
+        SmartDashboard.putNumber("Ball Count", Constants.startingBallCount);
+
         // Drive Base Moter Initialization:
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
         m_leftDriveTalon.set(ControlMode.Current, 0);
@@ -198,6 +206,10 @@ public class RobotContainer {
         // Init ControlPanel Motors
         controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
         controlPanelVictor.set(ControlMode.Velocity, 0);
+
+        // Init Intake Motors
+        intakeTalon = new WPI_TalonSRX(Constants.intakeCAN);
+        intakeTalon.set(ControlMode.PercentOutput, 0);
 
         //Sensor Init
         colorSensor = new ColorSensorV3(i2cPort);

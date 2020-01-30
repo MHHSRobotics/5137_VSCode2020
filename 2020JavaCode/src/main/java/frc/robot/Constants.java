@@ -41,6 +41,8 @@ public final class Constants {
     public final static int bRightDriveVictorCAN = 6;
     //Control Panel
     public final static int controlPanelCAN = 7;
+    //Intake 
+    public final static int intakeCAN = 8;
     //---------------------------------------//
     //accelerate() method (not currently being used)
     public final static double expirationTime = 0.5;
@@ -56,6 +58,10 @@ public final class Constants {
     //Used for ...
     //---------------------------------------//
     public final static double cpVelocity = 2.0; //test velocity variable (since gearbox screws with it)
+    public final static double veloConversion = 0.0;
+    //---------------------------------------//
+    public final static double startingBallCount = 3.0;
+    public final static double intakeTalonOutput = 0.4;
 
 
 }

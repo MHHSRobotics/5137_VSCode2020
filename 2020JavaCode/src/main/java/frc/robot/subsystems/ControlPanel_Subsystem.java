@@ -27,7 +27,8 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         colorSensor = RobotContainer.colorSensor;
     }
 
-    public void controlPanelPeriodic() {
+    @Override
+    public void periodic() {
         getColorSignal();
         System.out.println("ControlPanel Going");
     }
@@ -78,16 +79,16 @@ public class ControlPanel_Subsystem extends SubsystemBase {
     }
 
     public Color guessCurrentColorOnSensor() {
-        if (RobotContainer.colorSensor.getColor() == Color.kRed) {
+        if (colorSensor.getColor() == Color.kRed) {
             return Color.kBlue;
         }
-        else if (RobotContainer.colorSensor.getColor() == Color.kBlue) {
+        else if (colorSensor.getColor() == Color.kBlue) {
             return Color.kRed;
         }
-        else if (RobotContainer.colorSensor.getColor() == Color.kYellow) {
+        else if (colorSensor.getColor() == Color.kYellow) {
             return Color.kGreen;
         }
-        else if (RobotContainer.colorSensor.getColor() == Color.kGreen) {
+        else if (colorSensor.getColor() == Color.kGreen) {
             return Color.kYellow;
         }
         else {
@@ -137,6 +138,9 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         //Finds circumference
         distanceTravel = numberRotationsSmall * Constants.CPWheelCircum; //circuference of wheel is 8PI. Dist travel is in in.
 
+        //Convert Velocity from victor units into in./mms.
+        velocity = velocity * Constants.veloConversion; //Need to change 0 to something else...
+
         //Finds time to set motors for (in mms)
         waitTime = 1000 * distanceTravel/velocity;
 
@@ -152,5 +156,15 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         //ex. controlPanelVictor.set(30);
         
     }
+
+    public void senseColor() {
+        Color detectedColor = colorSensor.getColor();
+        double IR = colorSensor.getIR();
+    
+        SmartDashboard.putNumber("Red", detectedColor.red);
+        SmartDashboard.putNumber("Green", detectedColor.green);
+        SmartDashboard.putNumber("Blue", detectedColor.blue);
+        SmartDashboard.putNumber("IR", IR);
+      }
 
 }
