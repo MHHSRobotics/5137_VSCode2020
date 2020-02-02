@@ -17,12 +17,12 @@ public class Intake_Subsystem extends SubsystemBase {
     
     public Intake_Subsystem() {
         intakeTalon = RobotContainer.intakeTalon;
+        System.out.println("Intake Running...");
     }
 
     @Override
     public void periodic() {
         getAmmoCount();
-        System.out.println("Intake Running...");
     }
 
     public void intakeBalls() {
@@ -40,7 +40,7 @@ public class Intake_Subsystem extends SubsystemBase {
         return SmartDashboard.getNumber("Ball Count", errorDefaultValue);
     }
 
-    public void refreshAmmoCount() {
+    public void refreshAmmoCount() {//TODO make so that counter won't continuously add 1 or subtract 1
         boolean catchError = false;
 
         if (SmartDashboard.getBoolean("Add 1 Ball", catchError) == true) {

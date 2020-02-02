@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -17,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 
@@ -84,10 +86,13 @@ public class RobotContainer {
     // Limit Switches
     // public static DigitalInput limitSwitch;
 
-    //Sensors
+    // Sensors
     public static ColorSensorV3 colorSensor;
     public static I2C.Port i2cPort = I2C.Port.kOnboard;
 
+    // public static pixy
+
+    //Joystick buttons
     public static JoystickButton AButton; // A
     public static JoystickButton BButton; // B
     public static JoystickButton XButton; // ...
@@ -96,6 +101,10 @@ public class RobotContainer {
     public static JoystickButton StartButton;
     public static JoystickButton LBButton; // Left bumper button
     public static JoystickButton RBButton; // ...
+
+    // Triggers
+    public static Trigger rTrigger;
+    public static Trigger lTrigger;
 
     // DPad Buttons (names)
     public static POVButton uDPadButton; // Up DPad
@@ -109,9 +118,10 @@ public class RobotContainer {
     public static POVButton nDPadButton; // no press on DPad
 
     // create Joystick variable name
-    public static Joystick XBoxController; //Static means that the method/class the variable or method belongs too doesn't need to be created
+    public static Joystick XBoxController; // Static means that the method/class the variable or method belongs too
+                                           // doesn't need to be created
 
-    //create SmartDashboard name
+    // create SmartDashboard name
     public static SmartDashboard smartDashboard;
     public static ShuffleboardTab diagnosticTab;
     public static ShuffleboardTab liveWindowTab;
@@ -127,19 +137,19 @@ public class RobotContainer {
 
         // Configure the button bindings
         controlPanel_Subsystem = new ControlPanel_Subsystem();
-        configureButtonBindings();
-        
-        climb_Subsystem = new Climb_Subsystem();
-    
-        driveBase_Subsystem = new DriveBase_Subsystem();
-        intake_Subsystem = new Intake_Subsystem();
         shooter_Subsystem = new Shooter_Subsystem();
+        climb_Subsystem = new Climb_Subsystem();
+        intake_Subsystem = new Intake_Subsystem();
+
+        configureButtonBindings();
+
+        driveBase_Subsystem = new DriveBase_Subsystem(); //needs to go after since it uses an extended OI, which requires 
+        //button bindings to be run for its buttons to be mapped first...
 
         // Set creation of other objects (like cameras)
 
         // For cameras, set defaults here (like resolution, framerate, ...)
 
-        
     }
 
     /**
@@ -154,30 +164,33 @@ public class RobotContainer {
 
         XBoxController = new Joystick(Constants.JoystickPort);
 
-        /* Test this, may be good for using axes
-        if (XBoxController.getRawAxis(Constants.LTAxisPort) > .70) {
-            new RotationalControl_Command();
-        }*/
-
-        // Sets A button from Joystick Controller to Positional Control Command
-        //AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
-        //AButton.whenPressed(new PositionalControl_Command());
-
-        BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
-        BButton.whenPressed(new ControlPanel_Command());
+        // Test this, may be good for using axes
         
-        
+        BooleanSupplier booleanSupply = () -> true;
+        rTrigger = new Trigger(booleanSupply);
+        rTrigger.whileActiveContinuous(new Shoot_Command()); //NOTE: this version of whileActiveContinuous overrides any and all drive base control. May need to change.
+
+        /*if (XBoxController.getRawAxis(Constants.RTAxisPort) != 0) {
+            new Shoot_Command();
+            System.out.println("RT is goin");
+        } */
+
+        // Sets B Button to do Control Panel Command
+         BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+         BButton.whenHeld(new ControlPanel_Command());
+
     }
 
     public void InitMap() {
 
-        //Shuffle Board initialization:
+        // Shuffle Board initialization:
         diagnosticTab = Shuffleboard.getTab("Diagnostics");
         liveWindowTab = Shuffleboard.getTab("Live Window");
         SmartDashboard.putNumber("Ball Count", Constants.startingBallCount);
 
         // Drive Base Moter Initialization:
-        m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); //other motor controllers will follow this controller
+        m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); // other motor controllers will follow this
+                                                                          // controller
         m_leftDriveTalon.set(ControlMode.Current, 0);
 
         m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
@@ -186,7 +199,8 @@ public class RobotContainer {
         m_backLeftVic = new WPI_VictorSPX(Constants.bLeftDriveVictorCAN);
         m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
 
-        m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); //other motor controllers will follow this controller
+        m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); // other motor controllers will follow this
+                                                                            // controller
         m_rightDriveTalon.set(ControlMode.Current, 0);
 
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
@@ -196,13 +210,13 @@ public class RobotContainer {
         m_backRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
 
         m_leftDrive = new SpeedControllerGroup(m_leftDriveTalon, m_frontLeftVic, m_backLeftVic); // Ports in order:
-                                                                                                     // 1, 2, 3
+                                                                                                 // 1, 2, 3
         m_rightDrive = new SpeedControllerGroup(m_rightDriveTalon, m_frontRightVic, m_backRightVic); // 4, 5, 6
 
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
 
         // Init Shooter Motors
-        
+
         // Init ControlPanel Motors
         controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
         controlPanelVictor.set(ControlMode.Velocity, 0);
@@ -211,9 +225,12 @@ public class RobotContainer {
         intakeTalon = new WPI_TalonSRX(Constants.intakeCAN);
         intakeTalon.set(ControlMode.PercentOutput, 0);
 
-        //Sensor Init
-        colorSensor = new ColorSensorV3(i2cPort);
+        // Init Shooter Motors
+        shooterTalon = new WPI_TalonSRX(Constants.shooterCAN);
+        shooterTalon.set(ControlMode.PercentOutput, 0);
 
+        // Sensor Init
+        colorSensor = new ColorSensorV3(i2cPort);
     }
 
     /**
@@ -221,10 +238,10 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    //public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        //Command m_autoCommand = ;
-        //return m_autoCommand;
-    //}
-    
+    // public Command getAutonomousCommand() {
+    // An ExampleCommand will run in autonomous
+    // Command m_autoCommand = ;
+    // return m_autoCommand;
+    // }
+
 }

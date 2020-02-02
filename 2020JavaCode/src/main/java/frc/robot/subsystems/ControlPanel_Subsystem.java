@@ -25,12 +25,13 @@ public class ControlPanel_Subsystem extends SubsystemBase {
     public ControlPanel_Subsystem() {
         controlPanelVictor = RobotContainer.controlPanelVictor;
         colorSensor = RobotContainer.colorSensor;
+        System.out.println("ControlPanel Going");
     }
 
     @Override
     public void periodic() {
         getColorSignal();
-        System.out.println("ControlPanel Going");
+        System.out.println("Control Panel Victor Output: " + controlPanelVictor.getMotorOutputPercent());
     }
 
 
@@ -139,7 +140,7 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         distanceTravel = numberRotationsSmall * Constants.CPWheelCircum; //circuference of wheel is 8PI. Dist travel is in in.
 
         //Convert Velocity from victor units into in./mms.
-        velocity = velocity * Constants.veloConversion; //Need to change 0 to something else...
+        velocity = velocity * Constants.veloConversion; 
 
         //Finds time to set motors for (in mms)
         waitTime = 1000 * distanceTravel/velocity;

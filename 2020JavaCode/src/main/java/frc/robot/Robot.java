@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -91,7 +93,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    senseColor();
+    RobotContainer.intake_Subsystem.refreshAmmoCount();
+    RobotContainer.controlPanel_Subsystem.senseColor();
   }
 
   /**
@@ -184,15 +187,5 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     //TODO figure out what this is...
-  }
-
-  public void senseColor() {
-    Color detectedColor = RobotContainer.colorSensor.getColor();
-    double IR = RobotContainer.colorSensor.getIR();
-
-    RobotContainer.smartDashboard.putNumber("Red", detectedColor.red);
-    RobotContainer.smartDashboard.putNumber("Green", detectedColor.green);
-    RobotContainer.smartDashboard.putNumber("Blue", detectedColor.blue);
-    RobotContainer.smartDashboard.putNumber("IR", IR);
   }
 }
