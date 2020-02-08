@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 
@@ -89,8 +90,6 @@ public class RobotContainer {
     // Sensors
     public static ColorSensorV3 colorSensor;
     public static I2C.Port i2cPort = I2C.Port.kOnboard;
-
-    // public static pixy
 
     //Joystick buttons
     public static JoystickButton AButton; // A
@@ -176,9 +175,11 @@ public class RobotContainer {
         } */
 
         // Sets B Button to do Control Panel Command
-         BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
-         BButton.whenHeld(new ControlPanel_Command());
+        BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+        BButton.whenHeld(new ControlPanel_Command());
 
+        XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
+        XButton.toggleWhenPressed(new Intake_Command());
 
     }
 

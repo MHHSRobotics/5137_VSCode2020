@@ -3,6 +3,7 @@ package frc.robot.commands;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter_Subsystem;
 
@@ -21,7 +22,7 @@ public class Shoot_Command extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.shooter_Subsystem.setVelo();
+    RobotContainer.shooter_Subsystem.setVelo(Constants.shooterAngle);
   }
 
   // Called once the command ends or is interrupted.
