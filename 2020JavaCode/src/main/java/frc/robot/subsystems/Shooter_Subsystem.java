@@ -43,7 +43,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public double findDistance() { //finds distance away from target (tower) in inches...
         //May need to move onto Limelight
-        return (Constants.towerHeight / Math.atan(Robot.targety));
+        return (Constants.towerHeight / Math.tan(Robot.targety));
     }
     
     public boolean checkReadyShoot() {

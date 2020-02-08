@@ -70,6 +70,7 @@ public final class Constants {
     //---------------------------------------//
     public final static double shooterAngle = 69.0; //angle of shooter in degrees of the horizontal
     public final static double towerHeight = 98.25; //height of power tower in inches
-
+    public final static double limelightHeight = 12.0; //height of limelight in inches
+    public final static double gravitationalAccel = 9.8; //acceleration due to gravity
 
 }
