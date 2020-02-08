@@ -17,11 +17,12 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        System.out.println("RTAxis is : " + RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort));
+        //System.out.println("RTAxis is : " + 0.7);//RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort));
+        // System.out.println("Shooter Talon is going at: " + 0.7);//RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort));
     }
 
     public void setVelo() {
-        shooterTalon.set(RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort));
+        shooterTalon.set(0.7);//RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort));
     }
 
     public double veloCalc(double angle) {

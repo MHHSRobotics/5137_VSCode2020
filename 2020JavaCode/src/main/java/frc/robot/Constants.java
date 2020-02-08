@@ -11,7 +11,7 @@ Also, statically import the class/inner classes wherever the constants are neede
 public final class Constants {
     public final static double PI = 3.1415;
     public final static double CPWheelCircum = 25.1; //8P inches
-    public final static double SpinWheel = 3.5;
+    public final static double SpinWheel = 4.0;
     //---------------------------------------//
     //Used for OI
     public final static int JoystickPort = 0;
@@ -59,8 +59,15 @@ public final class Constants {
     public final static boolean isQuickTurn = true; //makes turning the drive base able to override constant-curvature turning for turn-in-place maneuvers.
     //Used for ...
     //---------------------------------------//
-    public final static double cpVelocity = 1.25; //test velocity variable (since gearbox screws with it)
+    public final static double cpRPMROT = 400; //test velocity variable (since gearbox screws with it) less means more for some stupid reason
+    public final static double cpRPMPOS = 225; //test velocity variable (since gearbox screws with it) less means more for some stupid reason
+    public final static double blueTargetMin = 0.4; //uses blue value
+    public final static double redTargetMin = 0.5; //uses red value
+    public final static double greenTargetMin = 0.55; //uses green value
+    public final static double yellowGreenTargetMin = 0.5;
+    public final static double yellowRedTargetMax = 0.15;
     public final static double veloConversion = 1.0;
+    public final static double rpmToPercentOutFactor = 0.07867; //DONOTCHANGEOHMAHGAHH
     //---------------------------------------//
     public final static double startingBallCount = 3.0;
     public final static double intakeTalonOutput = 0.4;

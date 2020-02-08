@@ -28,10 +28,10 @@ public class ControlPanel_Command extends CommandBase {
   public void execute() {
     
     if (DriverStation.getInstance().getGameSpecificMessage().length() > 0) { //Stage 2 automatic method
-      RobotContainer.controlPanel_Subsystem.controlPosition(Constants.cpVelocity);
+      RobotContainer.controlPanel_Subsystem.controlPosition(Constants.cpRPMPOS);
     }
     else { //Stage 1 automatic method
-      RobotContainer.controlPanel_Subsystem.controlRotation(Constants.cpVelocity);
+      RobotContainer.controlPanel_Subsystem.controlRotation(Constants.cpRPMROT);
     } 
   }
 

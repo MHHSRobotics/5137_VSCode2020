@@ -1,19 +1,15 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.InterruptableSensorBase.WaitResult;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class ControlPanel_Subsystem extends SubsystemBase {
     WPI_VictorSPX controlPanelVictor;
@@ -21,6 +17,11 @@ public class ControlPanel_Subsystem extends SubsystemBase {
     ColorSensorV3 colorSensor;
     Color fieldsSensedColor;
     Color FMSColor;
+
+    private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+    private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+    private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+    private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
     public ControlPanel_Subsystem() {
         controlPanelVictor = RobotContainer.controlPanelVictor;
@@ -43,19 +44,19 @@ public class ControlPanel_Subsystem extends SubsystemBase {
             switch (gameData.charAt(0)) {
             case 'B':
                 // Blue case code
-                return Color.kBlue;
+                return kBlueTarget;
 
             case 'G':
                 // Green case code
-                return Color.kGreen;
+                return kGreenTarget;
 
             case 'R':
                 // Red case code
-                return Color.kRed;
+                return kRedTarget;
 
             case 'Y':
                 // Yellow case code
-                return Color.kYellow;
+                return kYellowTarget;
                 
             default:
                 // This is corrupt data
@@ -67,32 +68,34 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         }
     }//need to send output of determined color to smartdashboard
 
-    public void controlPosition(double velocity) { //calculates the amount of time the motor should run at a given velocity
+    public void controlPosition(double motorRpm) { //calculates the amount of time the motor should run at a given velocity
         fieldsSensedColor = guessCurrentColorOnSensor();
         FMSColor = getColorSignal();
 
-        spinMotor(calcNumberRotations(fieldsSensedColor, FMSColor), velocity);
+        spinMotor(calcNumberRotations(fieldsSensedColor, FMSColor), convertRPMPercent(motorRpm), motorRpm);
 
     }
 
-    public void controlRotation(double velocity) { //calculates the amount of time the motor should run to complete rotation control
-        spinMotor(Constants.SpinWheel, velocity);
+    public void controlRotation(double motorRpm) { //calculates the amount of time the motor should run to complete rotation control
+        spinMotor(Constants.SpinWheel, convertRPMPercent(motorRpm), motorRpm);
     }
 
     public Color guessCurrentColorOnSensor() {
-        if (colorSensor.getColor() == Color.kRed) {
-            return Color.kBlue;
+        Color colorSensorColorRead = colorSensor.getColor();
+        if (colorSensorColorRead.blue > Constants.blueTargetMin) {
+            return kBlueTarget;
         }
-        else if (colorSensor.getColor() == Color.kBlue) {
-            return Color.kRed;
+        else if (colorSensorColorRead.red > Constants.redTargetMin) {
+            return kRedTarget;
         }
-        else if (colorSensor.getColor() == Color.kYellow) {
-            return Color.kGreen;
+        else if (colorSensorColorRead.green > Constants.greenTargetMin) {
+            return kGreenTarget;
         }
-        else if (colorSensor.getColor() == Color.kGreen) {
-            return Color.kYellow;
+        else if (colorSensorColorRead.green > Constants.yellowGreenTargetMin && colorSensorColorRead.red < Constants.yellowRedTargetMax) {
+            return kYellowTarget;
         }
         else {
+            System.out.println("BLACK AHHHGH");
             return Color.kBlack;
         }
     }
@@ -105,47 +108,51 @@ public class ControlPanel_Subsystem extends SubsystemBase {
             return 0.0;
         }
         else {
-            if ((kColorInput == Color.kRed && kColorInput == Color.kGreen) || 
-            (kColorInput == Color.kGreen && kColorInput == Color.kBlue) || 
-            (kColorInput == Color.kBlue && kColorInput == Color.kYellow) ||
-            (kColorInput == Color.kYellow && kColorInput == Color.kRed)) {
+            if ((kColorInput == kRedTarget && kColorFMS == kGreenTarget) || 
+            (kColorInput == kGreenTarget && kColorFMS == kBlueTarget) || 
+            (kColorInput == kBlueTarget && kColorFMS == kYellowTarget) ||
+            (kColorInput == kYellowTarget && kColorFMS == kRedTarget)) {
                 return 0.125;
             }
-            if ((kColorInput == Color.kRed && kColorInput == Color.kBlue) ||
-            (kColorInput == Color.kBlue && kColorInput == Color.kRed) ||
-            (kColorInput == Color.kGreen && kColorInput == Color.kYellow) ||
-            (kColorInput == Color.kYellow && kColorInput == Color.kGreen)) {
+            if ((kColorInput == kRedTarget && kColorFMS == kBlueTarget) ||
+            (kColorInput == kBlueTarget && kColorFMS == kRedTarget) ||
+            (kColorInput == kGreenTarget && kColorFMS == kYellowTarget) ||
+            (kColorInput == kYellowTarget && kColorFMS == kGreenTarget)) {
                 return 0.25;
             }
-            if ((kColorInput == Color.kRed && kColorInput == Color.kYellow) ||
-            (kColorInput == Color.kGreen && kColorInput == Color.kRed) ||
-            (kColorInput == Color.kBlue && kColorInput == Color.kGreen) ||
-            (kColorInput == Color.kYellow && kColorInput == Color.kBlue)) {
+            if ((kColorInput == kRedTarget && kColorFMS == kYellowTarget) ||
+            (kColorInput == kGreenTarget && kColorFMS == kRedTarget) ||
+            (kColorInput == kBlueTarget && kColorFMS == kGreenTarget) ||
+            (kColorInput == kYellowTarget && kColorFMS == kBlueTarget)) {
                 return -0.125;
             }
         }
         return 0.0;
     }
-    public void spinMotor(double numberRotationsBig, double velocity) {
+    public void spinMotor(double numberRotationsBig, double percentOut, double motorRpm) {
         //Note, currently, using 4 in. wheels on the control panel thing will make the ratio of curcumference 1:8, meaning one motor 
         //output spin means EXACTLY one color change on the wheel
-        double distanceTravel = 0.0;
+        //double distanceTravel = 0.0;
         double waitTime = 0.0;
         double numberRotationsSmall = 0.0;
 
         //0.125 as a rotation of the wheel = 1 spin of the actual controlled motor
-        numberRotationsSmall = numberRotationsBig / 8.0; //converts return value into # rotations of gear wheel
+        numberRotationsSmall = numberRotationsBig * 8.0; //converts return value into # rotations of gear wheel
+
 
         //Finds circumference
-        distanceTravel = numberRotationsSmall * Constants.CPWheelCircum; //circuference of wheel is 8PI. Dist travel is in in.
-
-        //Convert Velocity from victor units into in./mms.
-        velocity = velocity * Constants.veloConversion; 
-
+        //distanceTravel = numberRotationsSmall * Constants.CPWheelCircum; //circuference of wheel is 8PI. Dist travel is in in.
+         
         //Finds time to set motors for (in mms)
-        waitTime = 1000 * distanceTravel/velocity;
+        waitTime = Math.abs(1000.0 * (100.0 * numberRotationsSmall / motorRpm));
 
-        controlPanelVictor.set(velocity);
+        if (numberRotationsBig < 0.0) { //if motor needs to change direction (i.e. big wheel needs to go left)
+            controlPanelVictor.set(-percentOut);
+        }
+        else {
+            controlPanelVictor.set(percentOut);
+        }
+        
         try {
             Thread.sleep((long) waitTime);
         }
@@ -168,4 +175,9 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         SmartDashboard.putNumber("IR", IR);
       }
 
+    public double convertRPMPercent(double rpm) {
+        double returnThing = (rpm * Constants.rpmToPercentOutFactor)/100;
+        System.out.println("Percent Output is : " + returnThing);
+        return returnThing;
+    }
 }

@@ -179,6 +179,7 @@ public class RobotContainer {
          BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
          BButton.whenHeld(new ControlPanel_Command());
 
+
     }
 
     public void InitMap() {
@@ -219,7 +220,8 @@ public class RobotContainer {
 
         // Init ControlPanel Motors
         controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
-        controlPanelVictor.set(ControlMode.Velocity, 0);
+        controlPanelVictor.set(ControlMode.PercentOutput, 0);
+        controlPanelVictor.setInverted(true);
 
         // Init Intake Motors
         intakeTalon = new WPI_TalonSRX(Constants.intakeCAN);
@@ -228,6 +230,7 @@ public class RobotContainer {
         // Init Shooter Motors
         shooterTalon = new WPI_TalonSRX(Constants.shooterCAN);
         shooterTalon.set(ControlMode.PercentOutput, 0);
+        shooterTalon.setInverted(true);
 
         // Sensor Init
         colorSensor = new ColorSensorV3(i2cPort);
