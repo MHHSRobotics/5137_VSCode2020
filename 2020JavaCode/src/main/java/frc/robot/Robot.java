@@ -107,15 +107,27 @@ public class Robot extends TimedRobot {
     RobotContainer.intake_Subsystem.refreshAmmoCount();
     RobotContainer.controlPanel_Subsystem.senseColor();
 
-    targetx = findLimelightValueAverageArea();
-    targety = findLimelightValueAverageTX();
-    targetarea = findLimelightValueAverageTY();
-    System.out.println("LimelightX : " + targetx);
+    targety = findLimelightValueAverageTY();
+    targetx = findLimelightValueAverageTX();
+    targetarea = findLimelightValueAverageArea(); 
+
+    System.out.println("LimelightX in Degrees: " + targetx);
+    System.out.println("LimelightY in Degrees: " + targety);
+    System.out.println("LimelightArea in Degrees: " + targetarea);
+
+    targety = degrees2Radians(targety);
+    targetx = degrees2Radians(targetx);
+    targetarea = degrees2Radians(targetarea);
+
+    System.out.println("LimelightX in Radians: " + targetx);
     SmartDashboard.putNumber("LimelightX", targetx);
-    System.out.println("LimelightX : " + targety);
+    System.out.println("LimelightY in Radians: " + targety);
     SmartDashboard.putNumber("LimelightY", targety);
-    System.out.println("LimelightX : " + targetarea);
+    System.out.println("LimelightArea in Radians: " + targetarea);
     SmartDashboard.putNumber("LimelightArea", targetarea);
+
+    double temp = ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(targety));
+    System.out.println("Distance is :" + temp);
   }
 
   /**
@@ -225,28 +237,38 @@ public class Robot extends TimedRobot {
     table = NetworkTableInstance.getDefault().getTable("limelight");
 
     double acumulator = 0.0;
+    double previousEntry = 0.0;
+    int amntUniqueEntries = 0;
 
     for (int index = 0; index < Constants.packetsAmnt; index++) {
       tx = table.getEntry("tx");
-      acumulator += tx.getDouble(0.0);
+      if (tx.getDouble(0.0) != previousEntry) {
+        acumulator += tx.getDouble(0.0);
+        amntUniqueEntries++;
+      }
     } 
 
-    return acumulator / Constants.packetsAmnt;
+    return acumulator / amntUniqueEntries;
 
   }
 
   public double findLimelightValueAverageTY() {
-    // may need to relocate
+     // may need to relocate
     table = NetworkTableInstance.getDefault().getTable("limelight");
 
     double acumulator = 0.0;
+    double previousEntry = 0.0;
+    int amntUniqueEntries = 0;
 
     for (int index = 0; index < Constants.packetsAmnt; index++) {
       ty = table.getEntry("ty");
-      acumulator += ty.getDouble(0.0);
-    }
-    
-    return acumulator / Constants.packetsAmnt;
+      if (ty.getDouble(0.0) != previousEntry) {
+        acumulator += ty.getDouble(0.0);
+        amntUniqueEntries++;
+      }
+    } 
+
+    return acumulator / amntUniqueEntries;
 
   }
 
@@ -255,12 +277,23 @@ public class Robot extends TimedRobot {
     table = NetworkTableInstance.getDefault().getTable("limelight");
 
     double acumulator = 0.0;
+    double previousEntry = 0.0;
+    int amntUniqueEntries = 0;
 
     for (int index = 0; index < Constants.packetsAmnt; index++) {
       ta = table.getEntry("ta");
-      acumulator += ta.getDouble(0.0);
-    }
+      if (ta.getDouble(0.0) != previousEntry) {
+        acumulator += ta.getDouble(0.0);
+        amntUniqueEntries++;
+      }
+    } 
 
-    return acumulator / Constants.packetsAmnt;
+    return acumulator / amntUniqueEntries;
+
+  }
+  
+
+  public double degrees2Radians(double angle) {
+    return (angle * Constants.PI) / 180.0;
   }
 }

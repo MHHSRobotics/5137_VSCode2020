@@ -66,11 +66,11 @@ public final class Constants {
 
     //Shooter
     //---------------------------------------//
-    public final static int packetsAmnt = 5; //amount of packets gathered to find an average limelight value. Used for all types of limelight values
+    public final static int packetsAmnt = 180; //amount of packets gathered to find an average limelight value. Used for all types of limelight values. Packets should be in increments of ~18.
     //---------------------------------------//
-    public final static double shooterAngle = 69.0; //angle of shooter in degrees of the horizontal
+    public final static double shooterAngle = (69.0 * PI) / 180; //angle of shooter in radians of the horizontal (right now is 69 degrees)
     public final static double towerHeight = 98.25; //height of power tower in inches
-    public final static double limelightHeight = 12.0; //height of limelight in inches
+    public final static double limelightHeight = 10.5; //height of limelight in inches
     public final static double gravitationalAccel = 9.8; //acceleration due to gravity
 
 }
