@@ -17,7 +17,7 @@ public class Intake_Command extends CommandBase {
     //Called every time the scheduler runs while the command is scheduled
     @Override
     public void execute() {
-        RobotContainer.intake_Subsystem.intakeBalls();
+        RobotContainer.intake_Subsystem.toggleIntake();
     }
 
     @Override

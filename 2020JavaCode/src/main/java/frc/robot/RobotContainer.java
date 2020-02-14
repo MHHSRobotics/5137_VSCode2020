@@ -3,26 +3,35 @@ package frc.robot;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import frc.robot.subsystems.*;
-import frc.robot.commands.*;
+import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.ControlPanel_Command;
+import frc.robot.commands.Intake_Command;
+import frc.robot.commands.Shoot_Command;
+import frc.robot.subsystems.Climb_Subsystem;
+import frc.robot.subsystems.ControlPanel_Subsystem;
+import frc.robot.subsystems.DriveBase_Subsystem;
+import frc.robot.subsystems.Intake_Subsystem;
+import frc.robot.subsystems.Shooter_Subsystem;
+import frc.robot.subsystems.Storage_Subsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -46,6 +55,7 @@ public class RobotContainer {
     public static DriveBase_Subsystem driveBase_Subsystem;
     public static Intake_Subsystem intake_Subsystem;
     public static Shooter_Subsystem shooter_Subsystem;
+    public static Storage_Subsystem storage_Subsystem;
 
     // After these, put object declarations (for cameras, ultrasonic, ...)
 
@@ -68,15 +78,26 @@ public class RobotContainer {
     public static WPI_TalonSRX shooterTalon;
 
     // Control Panel
-    public static WPI_VictorSPX controlPanelVictor;
+    public static WPI_TalonSRX controlPanelTalon;
 
     // Intake
     public static WPI_TalonSRX intakeTalon;
 
-    // Solenoids:
+    // Storage
+    public static WPI_VictorSPX lstorageVictor;
+    public static WPI_VictorSPX rstorageVictor;
 
-    // Compressor (if doing)
-    // public static Compressor compressor;
+    // Solenoids:
+    public static Compressor compressor;
+
+        //Intake
+    public static DoubleSolenoid leftPneumaticPiston;
+    public static DoubleSolenoid rightPneumaticPiston;
+
+        //Shooter
+    public static DoubleSolenoid shootPneumaticPistonOne;
+    public static DoubleSolenoid shootPneumaticPistonTwo;
+    public static DoubleSolenoid shootPneumaticPistonThree;
 
     // Climb
 
@@ -139,6 +160,7 @@ public class RobotContainer {
         shooter_Subsystem = new Shooter_Subsystem();
         climb_Subsystem = new Climb_Subsystem();
         intake_Subsystem = new Intake_Subsystem();
+        storage_Subsystem = new Storage_Subsystem();
 
         configureButtonBindings();
 
@@ -168,11 +190,9 @@ public class RobotContainer {
         BooleanSupplier booleanSupply = () -> true;
         rTrigger = new Trigger(booleanSupply);
         rTrigger.whileActiveContinuous(new Shoot_Command()); //NOTE: this version of whileActiveContinuous overrides any and all drive base control. May need to change.
+        rTrigger.cancelWhenActive(new ArcadeDrive());
 
-        /*if (XBoxController.getRawAxis(Constants.RTAxisPort) != 0) {
-            new Shoot_Command();
-            System.out.println("RT is goin");
-        } */
+        rTrigger.whenInactive(new ArcadeDrive());
 
         // Sets B Button to do Control Panel Command
         BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
@@ -191,9 +211,9 @@ public class RobotContainer {
         SmartDashboard.putNumber("Ball Count", Constants.startingBallCount);
 
         // Drive Base Moter Initialization:
-        m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); // other motor controllers will follow this
-                                                                          // controller
+        m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); // other motor controllers will follow this controller
         m_leftDriveTalon.set(ControlMode.Current, 0);
+        m_leftDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
 
         m_frontLeftVic = new WPI_VictorSPX(Constants.fLeftDriveVictorCAN);
         m_frontLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
@@ -201,9 +221,9 @@ public class RobotContainer {
         m_backLeftVic = new WPI_VictorSPX(Constants.bLeftDriveVictorCAN);
         m_backLeftVic.set(ControlMode.Follower, Constants.leftDriveTalonCAN);
 
-        m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); // other motor controllers will follow this
-                                                                            // controller
+        m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); // other motor controllers will follow this controller
         m_rightDriveTalon.set(ControlMode.Current, 0);
+        m_rightDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
 
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
         m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
@@ -217,12 +237,12 @@ public class RobotContainer {
 
         BMoneysDriveBase = new DifferentialDrive(m_leftDrive, m_rightDrive);
 
-        // Init Shooter Motors
-
         // Init ControlPanel Motors
-        controlPanelVictor = new WPI_VictorSPX(Constants.controlPanelCAN);
-        controlPanelVictor.set(ControlMode.PercentOutput, 0);
-        controlPanelVictor.setInverted(true);
+        controlPanelTalon = new WPI_TalonSRX(Constants.controlPanelCAN);
+        controlPanelTalon.set(ControlMode.Velocity, 0);
+        controlPanelTalon.setInverted(true);
+        controlPanelTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
+
 
         // Init Intake Motors
         intakeTalon = new WPI_TalonSRX(Constants.intakeCAN);
@@ -230,11 +250,34 @@ public class RobotContainer {
 
         // Init Shooter Motors
         shooterTalon = new WPI_TalonSRX(Constants.shooterCAN);
-        shooterTalon.set(ControlMode.PercentOutput, 0);
+        shooterTalon.set(ControlMode.Velocity, 0);
         shooterTalon.setInverted(true);
+        shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
+
+        //Storage Motors
+        lstorageVictor = new WPI_VictorSPX(Constants.lstorageCAN);
+        lstorageVictor.set(ControlMode.Current, 0);
+        lstorageVictor.setInverted(true);
+        //may need to invert these motors
+
+        rstorageVictor = new WPI_VictorSPX(Constants.rstorageCAN);
+        rstorageVictor.set(ControlMode.Current, 0);
 
         // Sensor Init
         colorSensor = new ColorSensorV3(i2cPort);
+
+        //Solenoid Init 
+
+        //Intake
+        leftPneumaticPiston = new DoubleSolenoid(Constants.PCMCAN, Constants.leftPneuForwardChannel, Constants.leftPneuBackChannel);
+        rightPneumaticPiston = new DoubleSolenoid(Constants.PCMCAN, Constants.rightPneuForwardChannel, Constants.rightPneuBackChannel);
+        compressor = new Compressor(Constants.PCMCAN);
+        RobotContainer.compressor.setClosedLoopControl(true);
+        
+        //Shooter
+        shootPneumaticPistonOne = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP1ForwardChannel, Constants.shootPneumaticP1BackChannel);
+        shootPneumaticPistonTwo = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP2ForwardChannel, Constants.shootPneumaticP2BackChannel);
+        shootPneumaticPistonThree = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP3ForwardChannel, Constants.shootPneumaticP3BackChannel);
     }
 
     /**

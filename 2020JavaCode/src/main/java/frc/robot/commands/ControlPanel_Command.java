@@ -38,7 +38,7 @@ public class ControlPanel_Command extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
-    RobotContainer.controlPanelVictor.set(0);
+    RobotContainer.controlPanelTalon.set(0);
   }
 
   // Returns true when the command should end.

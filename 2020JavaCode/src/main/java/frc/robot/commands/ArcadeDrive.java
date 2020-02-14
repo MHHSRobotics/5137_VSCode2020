@@ -34,6 +34,6 @@ public class ArcadeDrive extends CommandBase {
 	}
 
     public boolean isFinished() {
-		return false;
+		return true;
     } 
 }

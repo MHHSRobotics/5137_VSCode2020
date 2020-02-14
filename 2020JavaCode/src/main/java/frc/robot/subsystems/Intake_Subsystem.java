@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -14,9 +14,16 @@ public class Intake_Subsystem extends SubsystemBase {
     SmartDashboard smartDashboard;
 
     double errorDefaultValue = -1.0;
+
+    DoubleSolenoid leftPiston;
+    DoubleSolenoid rightPiston;
+
+    boolean intakeDown = false;
     
     public Intake_Subsystem() {
         intakeTalon = RobotContainer.intakeTalon;
+        leftPiston = RobotContainer.leftPneumaticPiston;
+        rightPiston = RobotContainer.rightPneumaticPiston;
         System.out.println("Intake Running...");
     }
 
@@ -24,6 +31,26 @@ public class Intake_Subsystem extends SubsystemBase {
     public void periodic() {
         getAmmoCount();
     }
+
+    public void toggleIntake() {
+        if (intakeDown) {
+            leftPiston.set(DoubleSolenoid.Value.kReverse);
+            rightPiston.set(DoubleSolenoid.Value.kReverse);
+            endIntake();
+        }
+        else if (!intakeDown) {
+            leftPiston.set(DoubleSolenoid.Value.kForward);
+            rightPiston.set(DoubleSolenoid.Value.kForward);
+            intakeBalls();
+        }
+        else {
+            //weird catch code
+        }
+    }
+
+    public static DoubleSolenoid.Value getIntakeStatus(DoubleSolenoid piston) {
+    return piston.get();
+  }
 
     public void intakeBalls() {
         if (getAmmoCount() < 5.0 && getAmmoCount() >= 0.0) {
@@ -51,5 +78,9 @@ public class Intake_Subsystem extends SubsystemBase {
             SmartDashboard.putNumber("Ball Count", (SmartDashboard.getNumber("Ball Count", errorDefaultValue) - 1.0));
             SmartDashboard.putBoolean("Subtract 1 Ball", false);
         }
+    }
+
+    public void endIntake() {
+        intakeTalon.set(0);
     }
 }

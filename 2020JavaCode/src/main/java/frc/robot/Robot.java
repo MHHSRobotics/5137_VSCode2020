@@ -296,4 +296,15 @@ public class Robot extends TimedRobot {
   public double degrees2Radians(double angle) {
     return (angle * Constants.PI) / 180.0;
   }
+
+  public static double convertMagToLinearVelocity(int magVal, double radius) { //1 unit on a MAG is equal to 1/4096th of a rotation of the motor 
+      double angularVelo = (magVal / 4096.0) * 2 * Constants.PI; //finds radians/s
+      double linVelo = angularVelo * radius; //linear velocity is w * r
+      return linVelo;
+  }
+
+  public static double convertLinearVelocityToMag(double linVelo, double radius) {
+    double angularVelo = linVelo / radius;
+    return ((4096.0 * angularVelo) / (2 * Constants.PI));
+  }
 }

@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorSensorV3;
 
@@ -12,7 +12,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class ControlPanel_Subsystem extends SubsystemBase {
-    WPI_VictorSPX controlPanelVictor;
+    WPI_TalonSRX controlPanelTalon;
 
     ColorSensorV3 colorSensor;
     Color fieldsSensedColor;
@@ -24,7 +24,7 @@ public class ControlPanel_Subsystem extends SubsystemBase {
     private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
     public ControlPanel_Subsystem() {
-        controlPanelVictor = RobotContainer.controlPanelVictor;
+        controlPanelTalon = RobotContainer.controlPanelTalon;
         colorSensor = RobotContainer.colorSensor;
         System.out.println("ControlPanel Going");
     }
@@ -32,7 +32,7 @@ public class ControlPanel_Subsystem extends SubsystemBase {
     @Override
     public void periodic() {
         getColorSignal();
-        System.out.println("Control Panel Victor Output: " + controlPanelVictor.getMotorOutputPercent());
+        System.out.println("Control Panel Victor Output: " + controlPanelTalon.getMotorOutputPercent());
     }
 
 
@@ -147,10 +147,10 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         waitTime = Math.abs(1000.0 * (100.0 * numberRotationsSmall / motorRpm));
 
         if (numberRotationsBig < 0.0) { //if motor needs to change direction (i.e. big wheel needs to go left)
-            controlPanelVictor.set(-percentOut);
+            controlPanelTalon.set(-percentOut);
         }
         else {
-            controlPanelVictor.set(percentOut);
+            controlPanelTalon.set(percentOut);
         }
         
         try {
@@ -159,7 +159,7 @@ public class ControlPanel_Subsystem extends SubsystemBase {
         catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-        controlPanelVictor.set(0);
+        controlPanelTalon.set(0);
 
         //ex. controlPanelVictor.set(30);
         

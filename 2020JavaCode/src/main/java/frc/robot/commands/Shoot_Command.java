@@ -11,6 +11,7 @@ public class Shoot_Command extends CommandBase {
 
     public Shoot_Command() {
         addRequirements(RobotContainer.shooter_Subsystem);
+        addRequirements(RobotContainer.driveBase_Subsystem);
     }
 
     // Called when the command is initially scheduled.
@@ -22,7 +23,7 @@ public class Shoot_Command extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    RobotContainer.shooter_Subsystem.setVelo(Constants.shooterAngle);
+    RobotContainer.shooter_Subsystem.shoot(Constants.shooterAngle);
   }
 
   // Called once the command ends or is interrupted.
@@ -36,4 +37,6 @@ public class Shoot_Command extends CommandBase {
   public boolean isFinished() {
     return true;
   }
+
+  
 }
