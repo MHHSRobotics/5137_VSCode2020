@@ -52,6 +52,7 @@ public final class Constants {
 
     //Shooter
     public final static int shooterCAN = 9;
+    public final static int followerShooterCAN = 10;
     public static final int shootPneumaticP1ForwardChannel = 5;
     public static final int shootPneumaticP1BackChannel = 6;
 	public static final int shootPneumaticP2ForwardChannel = 7;
@@ -60,12 +61,12 @@ public final class Constants {
     public static final int shootPneumaticP3BackChannel = 10;
     
     //Storage
-    public final static int lstorageCAN = 10;
-    public final static int rstorageCAN = 11;
+    public final static int lstorageCAN = 11;
+    public final static int rstorageCAN = 12;
 
     //Climb
-    public final static int lclimbCAN = 12;
-    public final static int rclimbCAN = 13;
+    public final static int lclimbCAN = 13;
+    public final static int rclimbCAN = 14;
 
     //---------------------------------------//
     public final static double driveSensitivity = 2.0; //bigger # means less sensitivity, from 0.5 to 2.0

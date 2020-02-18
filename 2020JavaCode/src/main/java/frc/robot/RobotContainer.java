@@ -80,6 +80,7 @@ public class RobotContainer {
 
         // Shooter
     public static WPI_TalonSRX shooterTalon;
+    public static WPI_TalonSRX followerShooterTalon;
 
         // Control Panel
     public static WPI_TalonSRX controlPanelTalon;
@@ -262,6 +263,9 @@ public class RobotContainer {
         shooterTalon.set(ControlMode.Velocity, 0);
         shooterTalon.setInverted(true);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
+
+        followerShooterTalon = new WPI_TalonSRX(Constants.followerShooterCAN);
+        followerShooterTalon.set(ControlMode.Follower, Constants.shooterCAN);
 
         // Init Storage Motors
         lstorageVictor = new WPI_VictorSPX(Constants.lstorageCAN);
