@@ -63,6 +63,10 @@ public final class Constants {
     public final static int lstorageCAN = 10;
     public final static int rstorageCAN = 11;
 
+    //Climb
+    public final static int lclimbCAN = 12;
+    public final static int rclimbCAN = 13;
+
     //---------------------------------------//
     public final static double driveSensitivity = 2.0; //bigger # means less sensitivity, from 0.5 to 2.0
     //10.0: baby speed, 9.0: tdddler mode, 7.0: fast toddler mode, 5.0: optimal turn speed, 4.5:
@@ -85,6 +89,7 @@ public final class Constants {
     //---------------------------------------//
     public final static double startingBallCount = 3.0;
     public final static double intakeTalonOutput = 0.4;
+    public final static int intakeWaitTime = 1000; //wait time in ms to see if the storage is full
 
     //Shooter
     //---------------------------------------//
@@ -102,6 +107,8 @@ public final class Constants {
     //Storage
     //---------------------------------------//
     public final static double storageSpeed = 2; //speed of the belts in AMPS!!!
+    public final static int pixyLEDBrightness = 255;
+    public final static int storageWaitTime = 2000; //wait time to allow belt motors to continue for until it finds the target (in ms)
 
 
 }

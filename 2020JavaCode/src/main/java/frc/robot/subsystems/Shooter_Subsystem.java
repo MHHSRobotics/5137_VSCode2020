@@ -42,7 +42,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     }
 
     public void shoot(double angle) { //called by command (constantly)
-       while (checkReadyShoot(angle)) { //pnce ready to shoot
+       if (checkReadyShoot(angle)) { //pnce ready to shoot
             shootPneumaticPistonOne.set(DoubleSolenoid.Value.kReverse);
             shootPneumaticPistonTwo.set(DoubleSolenoid.Value.kReverse);
             shootPneumaticPistonThree.set(DoubleSolenoid.Value.kReverse);
@@ -92,11 +92,11 @@ public class Shooter_Subsystem extends SubsystemBase {
         boolean horizontalTurnGood = false;
         boolean velocityRunningGood = false;
 
-        do {
+        if (!horizontalTurnGood && !velocityRunningGood) {
             horizontalTurnGood = orientHorizontalTurn();
             velocityRunningGood = setVelo(angle);
             
-        } while (!horizontalTurnGood && !velocityRunningGood);
+        } 
 
         return true;
         
@@ -104,30 +104,30 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public boolean orientHorizontalTurn() { //returns true if the robot is horizontally oriented, false if interrupted
         if (Robot.targetx >= Constants.marginAngleError) { //if too far to the left
-            do {
+            if (Robot.targetx >= Constants.marginAngleError){
                 BMoneysDriveBase.curvatureDrive(0.0, -Constants.turnRate, true); //turn cntrclockwise
 
-            } while (Robot.targetx >= Constants.marginAngleError);
+            }  
             
             return true;
             
         }
         else if (Robot.targetx <= -Constants.marginAngleError) { //too far to the right
             
-            do {
+            if (Robot.targetx <= -Constants.marginAngleError) {
                 BMoneysDriveBase.curvatureDrive(0.0, Constants.turnRate, true); //turn clockwise
-            } while (Robot.targetx <= -Constants.marginAngleError);
+            }
             
             return true;
         }
         else {
 
             
-            while (Robot.targetx >= Constants.marginAngleError) { //check this will run forever without trigger updates
+            if (Robot.targetx >= Constants.marginAngleError) { //check this will run forever without trigger updates
                 BMoneysDriveBase.curvatureDrive(0.0, Constants.turnRate, true); //turn clockwise
             }
 
-            if (Robot.targetx >= -Constants.marginAngleError && Robot.targetx <= Constants.marginAngleError) {
+            if (Robot.targetx >= -Constants.marginAngleError && Robot.targetx <= Constants.marginAngleError) { //do this if the drive base is alligned 
                 BMoneysDriveBase.curvatureDrive(XBoxController.getRawAxis(Constants.LYStickAxisPort), 0.0, false);
             }
             return true;

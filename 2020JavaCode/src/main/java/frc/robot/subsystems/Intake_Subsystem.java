@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import io.github.pseudoresonance.pixy2api.Pixy2;
 
 public class Intake_Subsystem extends SubsystemBase {
     WPI_TalonSRX intakeTalon;
@@ -19,17 +20,20 @@ public class Intake_Subsystem extends SubsystemBase {
     DoubleSolenoid rightPiston;
 
     boolean intakeDown = false;
+
+    Pixy2 pixy;
     
     public Intake_Subsystem() {
         intakeTalon = RobotContainer.intakeTalon;
         leftPiston = RobotContainer.leftPneumaticPiston;
         rightPiston = RobotContainer.rightPneumaticPiston;
+        pixy = RobotContainer.pixy2;
         System.out.println("Intake Running...");
     }
 
     @Override
     public void periodic() {
-        getAmmoCount();
+        //getAmmoCount();
     }
 
     public void toggleIntake() {
@@ -53,7 +57,13 @@ public class Intake_Subsystem extends SubsystemBase {
   }
 
     public void intakeBalls() {
-        if (getAmmoCount() < 5.0 && getAmmoCount() >= 0.0) {
+        if (pixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
+            try { //may need changes for when balls are added, but the cartridge isn't full
+            Thread.sleep((long) Constants.intakeWaitTime);
+            }
+            catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            }
             intakeTalon.set(Constants.intakeTalonOutput);
         }
         else {
@@ -61,6 +71,8 @@ public class Intake_Subsystem extends SubsystemBase {
         }
     }
 
+    //All code below is outdated...
+/*
     public double getAmmoCount() {
         //smartDashboard.putNumber("Title", double number);
         refreshAmmoCount();
@@ -78,7 +90,7 @@ public class Intake_Subsystem extends SubsystemBase {
             SmartDashboard.putNumber("Ball Count", (SmartDashboard.getNumber("Ball Count", errorDefaultValue) - 1.0));
             SmartDashboard.putBoolean("Subtract 1 Ball", false);
         }
-    }
+    } */
 
     public void endIntake() {
         intakeTalon.set(0);

@@ -32,6 +32,8 @@ import frc.robot.subsystems.DriveBase_Subsystem;
 import frc.robot.subsystems.Intake_Subsystem;
 import frc.robot.subsystems.Shooter_Subsystem;
 import frc.robot.subsystems.Storage_Subsystem;
+import io.github.pseudoresonance.pixy2api.Pixy2;
+import io.github.pseudoresonance.pixy2api.links.SPILink;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -59,9 +61,11 @@ public class RobotContainer {
 
     // After these, put object declarations (for cameras, ultrasonic, ...)
 
+    public static Pixy2 pixy2;
+
     // Motor Controllers:
 
-    // Drive Base
+        // Drive Base
     public static WPI_TalonSRX m_leftDriveTalon;
     public static WPI_TalonSRX m_rightDriveTalon;
     public static WPI_VictorSPX m_frontLeftVic;
@@ -74,18 +78,22 @@ public class RobotContainer {
 
     public static DifferentialDrive BMoneysDriveBase;
 
-    // Shooter
+        // Shooter
     public static WPI_TalonSRX shooterTalon;
 
-    // Control Panel
+        // Control Panel
     public static WPI_TalonSRX controlPanelTalon;
 
-    // Intake
+        // Intake
     public static WPI_TalonSRX intakeTalon;
 
-    // Storage
+        // Storage
     public static WPI_VictorSPX lstorageVictor;
     public static WPI_VictorSPX rstorageVictor;
+
+        // Climb
+    public static WPI_TalonSRX lclimbTalon;
+    public static WPI_TalonSRX rclimbTalon;
 
     // Solenoids:
     public static Compressor compressor;
@@ -201,6 +209,8 @@ public class RobotContainer {
         XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
         XButton.toggleWhenPressed(new Intake_Command());
 
+        //need to add climb trigger...
+
     }
 
     public void InitMap() {
@@ -243,7 +253,6 @@ public class RobotContainer {
         controlPanelTalon.setInverted(true);
         controlPanelTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
 
-
         // Init Intake Motors
         intakeTalon = new WPI_TalonSRX(Constants.intakeCAN);
         intakeTalon.set(ControlMode.PercentOutput, 0);
@@ -254,7 +263,7 @@ public class RobotContainer {
         shooterTalon.setInverted(true);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); //may need to change configs on MAG Encoder
 
-        //Storage Motors
+        // Init Storage Motors
         lstorageVictor = new WPI_VictorSPX(Constants.lstorageCAN);
         lstorageVictor.set(ControlMode.Current, 0);
         lstorageVictor.setInverted(true);
@@ -263,18 +272,27 @@ public class RobotContainer {
         rstorageVictor = new WPI_VictorSPX(Constants.rstorageCAN);
         rstorageVictor.set(ControlMode.Current, 0);
 
+        // Init Climb Motors
+        lclimbTalon = new WPI_TalonSRX(Constants.lclimbCAN);
+        lclimbTalon.set(ControlMode.Current, 0);
+        rclimbTalon = new WPI_TalonSRX(Constants.rclimbCAN);
+        rclimbTalon.set(ControlMode.Current, 0);
+
         // Sensor Init
         colorSensor = new ColorSensorV3(i2cPort);
+        pixy2 = Pixy2.createInstance(new SPILink()); // Creates a new Pixy2 camera using SPILink
+        //Pixy Setup code
+        pixy2.setCameraBrightness(Constants.pixyLEDBrightness);
 
         //Solenoid Init 
 
-        //Intake
+            //Intake
         leftPneumaticPiston = new DoubleSolenoid(Constants.PCMCAN, Constants.leftPneuForwardChannel, Constants.leftPneuBackChannel);
         rightPneumaticPiston = new DoubleSolenoid(Constants.PCMCAN, Constants.rightPneuForwardChannel, Constants.rightPneuBackChannel);
         compressor = new Compressor(Constants.PCMCAN);
         RobotContainer.compressor.setClosedLoopControl(true);
         
-        //Shooter
+            //Shooter
         shootPneumaticPistonOne = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP1ForwardChannel, Constants.shootPneumaticP1BackChannel);
         shootPneumaticPistonTwo = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP2ForwardChannel, Constants.shootPneumaticP2BackChannel);
         shootPneumaticPistonThree = new DoubleSolenoid(Constants.PCMCAN, Constants.shootPneumaticP3ForwardChannel, Constants.shootPneumaticP3BackChannel);

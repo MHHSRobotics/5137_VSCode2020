@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    RobotContainer.intake_Subsystem.refreshAmmoCount();
+    //RobotContainer.intake_Subsystem.refreshAmmoCount();, outdated code...
     RobotContainer.controlPanel_Subsystem.senseColor();
 
     targety = findLimelightValueAverageTY();
