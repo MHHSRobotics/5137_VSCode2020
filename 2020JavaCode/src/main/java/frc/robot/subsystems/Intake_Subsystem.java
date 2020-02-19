@@ -21,13 +21,15 @@ public class Intake_Subsystem extends SubsystemBase {
 
     boolean intakeDown = false;
 
-    Pixy2 pixy;
+    Pixy2 cartridgepixy;
+    Pixy2 intakepixy;
     
     public Intake_Subsystem() {
         intakeTalon = RobotContainer.intakeTalon;
         leftPiston = RobotContainer.leftPneumaticPiston;
         rightPiston = RobotContainer.rightPneumaticPiston;
-        pixy = RobotContainer.pixy2;
+        cartridgepixy = RobotContainer.cartridgePixy;
+        intakepixy = RobotContainer.intakePixy;
         System.out.println("Intake Running...");
     }
 
@@ -57,7 +59,7 @@ public class Intake_Subsystem extends SubsystemBase {
   }
 
     public void intakeBalls() {
-        if (pixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
+        if (cartridgepixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
             try { //may need changes for when balls are added, but the cartridge isn't full
             Thread.sleep((long) Constants.intakeWaitTime);
             }
@@ -72,7 +74,7 @@ public class Intake_Subsystem extends SubsystemBase {
     }
 
     //All code below is outdated...
-/*
+    /*
     public double getAmmoCount() {
         //smartDashboard.putNumber("Title", double number);
         refreshAmmoCount();
@@ -94,5 +96,10 @@ public class Intake_Subsystem extends SubsystemBase {
 
     public void endIntake() {
         intakeTalon.set(0);
+    }
+
+    public void autoIntake() {
+        //cartridgepixy.getCCC().getBlocks()...
+        //need to add a system that will orient the shooter towards the balls for autonomous
     }
 }

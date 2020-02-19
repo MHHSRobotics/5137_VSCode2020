@@ -12,6 +12,7 @@ public final class Constants {
 
     //Used for OI
     public final static int JoystickPort = 0;
+    public final static int AssistantJoystickPort = 1;
     //---------------------------------------//
     public final static int AButtonPort = 1;
     public final static int BButtonPort = 2;
@@ -104,6 +105,7 @@ public final class Constants {
     public final static double turnRate = 0.2; //turn speed based on percentage of drive base output
     public final static double veloError = 0.05; //amount of variance in m/s that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
+    public static long shootTriggerWaitTime = 800; //how long the pneumatics should wait until reseting (in ms)
 
     //Storage
     //---------------------------------------//

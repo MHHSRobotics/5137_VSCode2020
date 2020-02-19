@@ -46,11 +46,21 @@ public class Shooter_Subsystem extends SubsystemBase {
             shootPneumaticPistonOne.set(DoubleSolenoid.Value.kReverse);
             shootPneumaticPistonTwo.set(DoubleSolenoid.Value.kReverse);
             shootPneumaticPistonThree.set(DoubleSolenoid.Value.kReverse);
+            try {
+            Thread.sleep((long) Constants.shootTriggerWaitTime);
+            }
+            catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            }
+       
        }
-       //pnce not ready to shoot
+        //pnce not ready to shoot
         shootPneumaticPistonOne.set(DoubleSolenoid.Value.kForward);
         shootPneumaticPistonTwo.set(DoubleSolenoid.Value.kForward);
         shootPneumaticPistonThree.set(DoubleSolenoid.Value.kForward);
+       
+       
+        
     }
 
     public boolean setVelo(double angle) { //return when velocity is running optimally 
@@ -95,11 +105,11 @@ public class Shooter_Subsystem extends SubsystemBase {
         if (!horizontalTurnGood && !velocityRunningGood) {
             horizontalTurnGood = orientHorizontalTurn();
             velocityRunningGood = setVelo(angle);
-            
+            return false;
         } 
-
-        return true;
-        
+        else {
+            return true;
+        }
     }
 
     public boolean orientHorizontalTurn() { //returns true if the robot is horizontally oriented, false if interrupted

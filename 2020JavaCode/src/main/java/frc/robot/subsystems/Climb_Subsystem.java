@@ -11,7 +11,6 @@ public class Climb_Subsystem extends SubsystemBase {
     WPI_TalonSRX lclimbTalon;
     WPI_TalonSRX rclimbTalon;
 
-
     public Climb_Subsystem() {
         lclimbTalon = RobotContainer.lclimbTalon;
         rclimbTalon = RobotContainer.rclimbTalon;

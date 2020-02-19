@@ -18,13 +18,17 @@ public class Storage_Subsystem extends SubsystemBase {
     public Storage_Subsystem() {
         lstorageVictor = RobotContainer.lstorageVictor;
         rstorageVictor = RobotContainer.rstorageVictor;
-        pixy = RobotContainer.pixy2;
+        pixy = RobotContainer.cartridgePixy;
     }
 
-    public void store() {
+    public void store(boolean overriden) {
         if(checkReadyToMove()) {
             lstorageVictor.set(Constants.storageSpeed);
             rstorageVictor.set(Constants.storageSpeed);
+        }
+        else if (overriden) {
+            lstorageVictor.set(RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
+            rstorageVictor.set(RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
         }
         else {
             try { //may need changes for when balls are added, but the cartridge isn't full
