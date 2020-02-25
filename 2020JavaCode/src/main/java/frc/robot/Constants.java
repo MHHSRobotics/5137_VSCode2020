@@ -32,28 +32,29 @@ public final class Constants {
 
     //---------------------------------------//
     //CAN Items
-
-    //Drive Base
-    public final static int leftDriveTalonCAN = 1;
-    public final static int rightDriveTalonCAN = 2;
-    public final static int fLeftDriveVictorCAN = 3;
-    public final static int fRightDriveVictorCAN = 4;
-    public final static int bLeftDriveVictorCAN = 5;
-    public final static int bRightDriveVictorCAN = 6;
+    //Note to BMoney: Don't change these names here on
+    //Drive Base                                        //Labels: A=right & B=left
+    public final static int leftDriveTalonCAN = 1;      //B2
+    public final static int rightDriveTalonCAN = 2;     //A2
+    public final static int fLeftDriveVictorCAN = 3;    //B3
+    public final static int fRightDriveVictorCAN = 4;   //A3
+    public final static int bLeftDriveVictorCAN = 5;    //B4
+    public final static int bRightDriveVictorCAN = 6;   //A4
     //Control Panel
-    public final static int controlPanelCAN = 7;
+    public final static int controlPanelCAN = 7;        //C7
 
     //Intake 
-    public final static int intakeCAN = 8;
-    public static final int PCMCAN = 10; //PCM CAN items are subject to change
+    public final static int intakeCAN = 8;              //C8
+    public static final int PCMCAN = 41;                //No label.PCM CAN items are subject to change
+    public static final int PDPCAN = 40;                //No Label
     public static final int leftPneuForwardChannel = 1;
     public static final int leftPneuBackChannel = 2;
     public static final int rightPneuForwardChannel = 3;
     public static final int rightPneuBackChannel = 4;
 
     //Shooter
-    public final static int shooterCAN = 9;
-    public final static int followerShooterCAN = 10;
+    public final static int shooterCAN = 9;             //C1
+    public final static int followerShooterCAN = 10;    //C5
     public static final int shootPneumaticP1ForwardChannel = 5;
     public static final int shootPneumaticP1BackChannel = 6;
 	public static final int shootPneumaticP2ForwardChannel = 7;
@@ -62,12 +63,12 @@ public final class Constants {
     public static final int shootPneumaticP3BackChannel = 10;
     
     //Storage
-    public final static int lstorageCAN = 11;
-    public final static int rstorageCAN = 12;
+    public final static int lstorageCAN = 11;           //C4
+    public final static int rstorageCAN = 12;           //C3
 
     //Climb
-    public final static int lclimbCAN = 13;
-    public final static int rclimbCAN = 14;
+    public final static int lclimbCAN = 13;             //B1
+    public final static int rclimbCAN = 14;             //A1
 
     //---------------------------------------//
     public final static double driveSensitivity = 2.0; //bigger # means less sensitivity, from 0.5 to 2.0
