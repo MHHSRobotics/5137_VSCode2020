@@ -1,15 +1,19 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.TalonPID;
 
 
 public class Shooter_Subsystem extends SubsystemBase {
@@ -17,66 +21,93 @@ public class Shooter_Subsystem extends SubsystemBase {
     DifferentialDrive BMoneysDriveBase;
 
     WPI_TalonSRX shooterTalon;
+    WPI_TalonSRX shooterFollowerTalon;
 
     Joystick XBoxController;
 
     double distAway;
 
-    DoubleSolenoid shootPneumaticPistonOne;
-    DoubleSolenoid shootPneumaticPistonTwo;
-    DoubleSolenoid shootPneumaticPistonThree;
+    Solenoid shootPneumaticPistonOne;
+
+    boolean horizontalTurnGood;
+    boolean velocityRunningGood;
+    boolean toggle;
+
+    double motorSpeed;
     
     public Shooter_Subsystem() {
         //Variable assignment goes here...
         XBoxController = RobotContainer.XBoxController;
         BMoneysDriveBase = RobotContainer.BMoneysDriveBase;
         shooterTalon = RobotContainer.shooterTalon;
+        shooterFollowerTalon = RobotContainer.followerShooterTalon;
         shootPneumaticPistonOne = RobotContainer.shootPneumaticPistonOne;
-        shootPneumaticPistonTwo = RobotContainer.shootPneumaticPistonTwo;
-        shootPneumaticPistonThree = RobotContainer.shootPneumaticPistonThree;
+        toggle = false;
+        horizontalTurnGood = false;
+        velocityRunningGood = false;
+        motorSpeed = 1.0;
     }
 
     @Override
     public void periodic() {
         distAway = findDistance();
+            //shooterTalon.set(motorSpeed);
+            //shooterFollowerTalon.set(motorSpeed);
+        //shooterFollowerTalon.set(motorSpeed);
+        if (XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1) {
+            shooterTalon.set(0);
+            shooterFollowerTalon.set(0);
+        }
     }
 
-    public void shoot(double angle) { //called by command (constantly)
+    public void shoot(double angle) { //called by command (constantly)      
+        RobotContainer.storage_Subsystem.store(false, false); 
+        shooterTalon.set(motorSpeed);
+        shooterFollowerTalon.set(motorSpeed);
        if (checkReadyShoot(angle)) { //pnce ready to shoot
-            shootPneumaticPistonOne.set(DoubleSolenoid.Value.kReverse);
-            shootPneumaticPistonTwo.set(DoubleSolenoid.Value.kReverse);
-            shootPneumaticPistonThree.set(DoubleSolenoid.Value.kReverse);
-            try {
-            Thread.sleep((long) Constants.shootTriggerWaitTime);
-            }
-            catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            }
-       
+        //RobotContainer.storage_Subsystem.store(false, false);
        }
-        //pnce not ready to shoot
-        shootPneumaticPistonOne.set(DoubleSolenoid.Value.kForward);
-        shootPneumaticPistonTwo.set(DoubleSolenoid.Value.kForward);
-        shootPneumaticPistonThree.set(DoubleSolenoid.Value.kForward);
-       
-       
-        
+       else { //pnce not ready to shoot
+        //RobotContainer.storage_Subsystem.store(false, true);
+       }
+    }
+
+    public void endShoot() { /*
+        shooterTalon.set(0);
+        shooterFollowerTalon.set(0); */ 
     }
 
     public boolean setVelo(double angle) { //return when velocity is running optimally 
-        double setVelo = veloCalc(angle); 
+        double setVelo = convertVelo(veloCalc(angle)); 
         double magVelo = Robot.convertLinearVelocityToMag(setVelo, Constants.currentShooterRadius); //may need to use PHASE with the MAG Encoders
 
-        shooterTalon.set(magVelo);
+        //Closed-Loop Control of Talons
 
-        if (Robot.convertMagToLinearVelocity(shooterTalon.getSelectedSensorVelocity(), (Constants.currentShooterRadius)) <= (setVelo + Constants.veloError) || 
-         Robot.convertMagToLinearVelocity(shooterTalon.getSelectedSensorVelocity(), (Constants.currentShooterRadius)) >= (setVelo - Constants.veloError)) 
+        //shooterTalon.set(mode, demand0, demand1Type, demand1);
+        
+        //shooterTalon.set(-0.8);
+        //shooterFollowerTalon.set(0);
+        //double error = TalonPID.printOutTalonPIDValues(shooterTalon, setVelo);
+
+        //Return true if within a degree of error, or else don't
+        /*
+        if (error <= Constants.veloError && error >= -Constants.veloError) 
          {
             return true; 
         }
         else {
             return false;
+        }  */
+        /*
+        if (1000 <= shooterTalon.getSensorCollection().getQuadratureVelocity()) {
+            System.out.println("Encoder says: " + shooterTalon.getSensorCollection().getQuadratureVelocity());
+            return true;
         }
+        else {
+            return false;
+        } */
+        return true;
+        
     }
 
     public double veloCalc(double angle) {
@@ -90,58 +121,33 @@ public class Shooter_Subsystem extends SubsystemBase {
         //put calculations with everything here... (thanks to Ashwin) (subject to change, since these calcs assume that the launch is from the ground)
         //exitVelo = Math.sqrt((Constants.gravitationalAccel * Math.pow(distAway, 2)) / ((distAway * Math.sin(2 * angle)) - (2 * (Constants.towerHeight - Constants.limelightHeight) * Math.pow(Math.cos(Constants.shooterAngle), 2))));
 
+        //BMoney's Equation including different heights
+        exitVelo = (distAway * Math.cos(Constants.shooterAngle *Constants.PI / 180)) / 
+        (Math.sqrt((2 * (Constants.towerHeight - Constants.limelightHeight)) / 
+        Constants.gravitationalAccel));
         return exitVelo;
+    }
+
+    public double convertVelo(double velo) { //converts given velocity into MAG velocity
+        return velo * 4096 * 500 / 600;
     }
 
     public double findDistance() { //finds distance away from target (tower) in inches...
         //May need to move onto Limelight
-        return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(Robot.targety));
+        double angle = (Constants.PI * (Robot.targety + Constants.limelightAngle)) / 180;
+        return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle));
     }
     
     public boolean checkReadyShoot(double angle) {
-        boolean horizontalTurnGood = false;
-        boolean velocityRunningGood = false;
-
-        if (!horizontalTurnGood && !velocityRunningGood) {
-            horizontalTurnGood = orientHorizontalTurn();
-            velocityRunningGood = setVelo(angle);
+        velocityRunningGood = setVelo(angle);
+        //horizontalTurnGood = RobotContainer.driveBase_Subsystem.orientHorizontalTurn();
+        horizontalTurnGood = true;
+     
+        if (horizontalTurnGood && velocityRunningGood) {
+            return true;
+        }
+        else {
             return false;
-        } 
-        else {
-            return true;
-        }
-    }
-
-    public boolean orientHorizontalTurn() { //returns true if the robot is horizontally oriented, false if interrupted
-        if (Robot.targetx >= Constants.marginAngleError) { //if too far to the left
-            if (Robot.targetx >= Constants.marginAngleError){
-                BMoneysDriveBase.curvatureDrive(0.0, -Constants.turnRate, true); //turn cntrclockwise
-
-            }  
-            
-            return true;
-            
-        }
-        else if (Robot.targetx <= -Constants.marginAngleError) { //too far to the right
-            
-            if (Robot.targetx <= -Constants.marginAngleError) {
-                BMoneysDriveBase.curvatureDrive(0.0, Constants.turnRate, true); //turn clockwise
-            }
-            
-            return true;
-        }
-        else {
-
-            
-            if (Robot.targetx >= Constants.marginAngleError) { //check this will run forever without trigger updates
-                BMoneysDriveBase.curvatureDrive(0.0, Constants.turnRate, true); //turn clockwise
-            }
-
-            if (Robot.targetx >= -Constants.marginAngleError && Robot.targetx <= Constants.marginAngleError) { //do this if the drive base is alligned 
-                BMoneysDriveBase.curvatureDrive(XBoxController.getRawAxis(Constants.LYStickAxisPort), 0.0, false);
-            }
-            return true;
-            
         }
     }
 }

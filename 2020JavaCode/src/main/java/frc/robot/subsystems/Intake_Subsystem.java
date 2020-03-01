@@ -1,8 +1,9 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -10,27 +11,28 @@ import frc.robot.RobotContainer;
 import io.github.pseudoresonance.pixy2api.Pixy2;
 
 public class Intake_Subsystem extends SubsystemBase {
-    WPI_TalonSRX intakeTalon;
+    WPI_VictorSPX intakeVictor;
 
     SmartDashboard smartDashboard;
 
     double errorDefaultValue = -1.0;
 
-    DoubleSolenoid leftPiston;
-    DoubleSolenoid rightPiston;
+    Solenoid leftPiston;
+    Solenoid rightPiston;
 
     boolean intakeDown = false;
 
     Pixy2 cartridgepixy;
     Pixy2 intakepixy;
+
+    double intakeVictorOut;
     
     public Intake_Subsystem() {
-        intakeTalon = RobotContainer.intakeTalon;
+        intakeVictor = RobotContainer.intakeVictor;
         leftPiston = RobotContainer.leftPneumaticPiston;
         rightPiston = RobotContainer.rightPneumaticPiston;
         cartridgepixy = RobotContainer.cartridgePixy;
         intakepixy = RobotContainer.intakePixy;
-        System.out.println("Intake Running...");
     }
 
     @Override
@@ -40,36 +42,43 @@ public class Intake_Subsystem extends SubsystemBase {
 
     public void toggleIntake() {
         if (intakeDown) {
-            leftPiston.set(DoubleSolenoid.Value.kReverse);
-            rightPiston.set(DoubleSolenoid.Value.kReverse);
+            /*
+            leftPiston.set(true);
+            rightPiston.set(true);
+            */
             endIntake();
+            intakeDown = false;
         }
         else if (!intakeDown) {
-            leftPiston.set(DoubleSolenoid.Value.kForward);
-            rightPiston.set(DoubleSolenoid.Value.kForward);
+            /*
+            leftPiston.set(true);
+            rightPiston.set(true);
+            */
             intakeBalls();
+            intakeDown = true;
         }
         else {
             //weird catch code
         }
     }
 
-    public static DoubleSolenoid.Value getIntakeStatus(DoubleSolenoid piston) {
-    return piston.get();
-  }
-
     public void intakeBalls() {
-        if (cartridgepixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
-            try { //may need changes for when balls are added, but the cartridge isn't full
+        if (true) {//cartridgepixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
+            /*try { //may need changes for when balls are added, but the cartridge isn't full
             Thread.sleep((long) Constants.intakeWaitTime);
             }
             catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
             }
-            intakeTalon.set(Constants.intakeTalonOutput);
+            */
+            intakeVictor.set(ControlMode.Current, -Constants.intakeVictorOutput);
+            System.out.println("Intake is awake...");
+            System.out.println("Intake Out is :" + intakeVictorOut);
+            
         }
         else {
-            intakeTalon.set(-Constants.intakeTalonOutput);
+            intakeVictor.set(ControlMode.Current, Constants.intakeVictorOutput);
+           System.out.println("Intake is sleeping...");
         }
     }
 
@@ -95,7 +104,7 @@ public class Intake_Subsystem extends SubsystemBase {
     } */
 
     public void endIntake() {
-        intakeTalon.set(0);
+        intakeVictor.set(-Constants.intakeVictorOutput);
     }
 
     public void autoIntake() {

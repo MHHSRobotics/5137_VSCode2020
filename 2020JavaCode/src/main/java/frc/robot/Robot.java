@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -105,8 +106,15 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     //RobotContainer.intake_Subsystem.refreshAmmoCount();, outdated code...
-    RobotContainer.controlPanel_Subsystem.senseColor();
-
+    //RobotContainer.controlPanel_Subsystem.senseColor();
+    /*
+    if (RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort) > 0.1) {
+      table.getEntry("pipeline").setNumber(1); //sets pipeline number 1-9. 1 is limelight, 2 is not
+    }
+    else {
+      table.getEntry("pipeline").setNumber(2);
+    } */
+    
     targety = findLimelightValueAverageTY();
     targetx = findLimelightValueAverageTX();
     targetarea = findLimelightValueAverageArea(); 

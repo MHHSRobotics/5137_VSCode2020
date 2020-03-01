@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,21 +16,33 @@ public class Storage_Subsystem extends SubsystemBase {
     WPI_VictorSPX lstorageVictor;
     WPI_VictorSPX rstorageVictor;
 
+    boolean invertStore;
+
     public Storage_Subsystem() {
         lstorageVictor = RobotContainer.lstorageVictor;
         rstorageVictor = RobotContainer.rstorageVictor;
         pixy = RobotContainer.cartridgePixy;
     }
 
-    public void store(boolean overriden) {
-        if(checkReadyToMove()) {
+    public void store(boolean overriden, boolean shooting) {
+        
+        
+        if(!overriden && !shooting) { //switch to checkReadyMove() for true. Does top belt (not shooting, but picking up)
+            lstorageVictor.set(Constants.storageSpeed);
+            rstorageVictor.set(0);
+            //rstorageVictor.set(Constants.storageSpeed);
+        }
+        else if (overriden) { //want to override storage belts, runs both based on override controller, and in the opposite direction
+            lstorageVictor.set(-1 * RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
+            rstorageVictor.set(-1 * RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
+        }
+        else if (shooting){ //if the storage doesn't need to be moving
+            //lstorageVictor.set(Constants.storageSpeed);
+            
             lstorageVictor.set(Constants.storageSpeed);
             rstorageVictor.set(Constants.storageSpeed);
         }
-        else if (overriden) {
-            lstorageVictor.set(RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
-            rstorageVictor.set(RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
-        }
+
         else {
             try { //may need changes for when balls are added, but the cartridge isn't full
             Thread.sleep((long) Constants.storageWaitTime);
@@ -37,8 +50,8 @@ public class Storage_Subsystem extends SubsystemBase {
             catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
             }
-            lstorageVictor.set(0);
-            rstorageVictor.set(0);
+            lstorageVictor.set(ControlMode.Current, 0);
+            rstorageVictor.set(ControlMode.Current, 0);
         }
     }
 

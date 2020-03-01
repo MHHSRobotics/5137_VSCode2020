@@ -1,15 +1,14 @@
 package frc.robot.subsystems;
 
-//New API may not need to import dependable commands
-import frc.robot.RobotContainer; //Import Timed Robot methods (from overall robot)
-import frc.robot.Constants;
-import frc.robot.commands.ArcadeDrive;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SubsystemBase; //Import Subsystem Class (*new this year*)
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive; //Import DifferentialDrive (a way to have an arcade drive)
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase; //Import Subsystem Class (*new this year*)
+import frc.robot.Constants;
+import frc.robot.Robot;
+//New API may not need to import dependable commands
+import frc.robot.RobotContainer; //Import Timed Robot methods (from overall robot)
+import frc.robot.commands.ArcadeDrive;
 
 public class DriveBase_Subsystem extends SubsystemBase {
 	DifferentialDrive BMoneysDifferentialDrive;
@@ -86,6 +85,26 @@ public class DriveBase_Subsystem extends SubsystemBase {
 		
 		return newSpeed;
 	} */
+
+	public boolean orientHorizontalTurn() { //returns true if the robot is horizontally oriented, false if interrupted
+        if (Robot.targetx >= Constants.marginAngleError) { //if too far to the left
+            BMoneysDifferentialDrive.curvatureDrive(0.0, Constants.turnRate, true); //turn cntrclockwise
+            return false;
+            
+        }
+        else if (Robot.targetx <= -Constants.marginAngleError) { //too far to the right
+            BMoneysDifferentialDrive.curvatureDrive(0.0, -Constants.turnRate, true); //turn clockwise
+            return false;
+        }
+        else {
+
+            //do this if the drive base is alligned 
+            BMoneysDifferentialDrive.curvatureDrive(XBoxController.getRawAxis(Constants.LYStickAxisPort), 0.0, false);
+            
+			return true;
+		}
+            
+        }
 
 	public void drivePivot(double speed) { // TODO may need to make this negative
 		BMoneysDifferentialDrive.arcadeDrive(0, speed);

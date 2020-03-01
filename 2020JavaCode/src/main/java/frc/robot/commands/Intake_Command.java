@@ -22,7 +22,6 @@ public class Intake_Command extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        RobotContainer.intakeTalon.set(0);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class Shoot_Command extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
-    RobotContainer.shooterTalon.set(0);
+    RobotContainer.shooter_Subsystem.endShoot();
   }
 
   // Returns true when the command should end.
