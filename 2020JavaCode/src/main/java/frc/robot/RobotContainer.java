@@ -275,6 +275,12 @@ public class RobotContainer {
         ArTrigger.whileActiveContinuous(new DownwardStorage_Command());
         ArTrigger.whenInactive(new OffStorage_Command());
         ArTrigger.whenInactive(new OffIntake_Command());
+
+        //RBButton needs testing
+        RBButton = new JoystickButton(AssistantController, Constants.RButtonPort);
+        RBButton.whileActiveContinuous(new ReversedOnIntake_Command());
+        RBButton.whenInactive(new OffIntake_Command());
+        RBButton.whenInactive(new OffStorage_Command());
         
         
 
@@ -365,6 +371,11 @@ public class RobotContainer {
         shooterTalon.setInverted(false);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to change
                                                                                                    // configs on MAG
+
+        shooterTalon.config_kF(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
+        shooterTalon.config_kP(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
+        shooterTalon.config_kI(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
+        shooterTalon.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
        
         shooterTalon.setSensorPhase(true); // Encoder is "flipped"
         TalonPID.configTalonPIDValues(shooterTalon, Constants.shooterF, Constants.shooterP, Constants.shooterI, Constants.shooterD);

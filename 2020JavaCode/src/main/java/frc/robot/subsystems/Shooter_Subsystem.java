@@ -33,8 +33,6 @@ public class Shooter_Subsystem extends SubsystemBase {
     boolean horizontalTurnGood;
     boolean velocityRunningGood;
     boolean toggle;
-
-    double motorSpeed;
     
     public Shooter_Subsystem() {
         //Variable assignment goes here...
@@ -46,7 +44,6 @@ public class Shooter_Subsystem extends SubsystemBase {
         toggle = false;
         horizontalTurnGood = false;
         velocityRunningGood = false;
-        motorSpeed = 1.0;
     }
 
     @Override
@@ -72,41 +69,47 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public boolean setVelo(double angle, boolean manual) { //return when velocity is running optimally 
         double setVelo = convertVeloIntoRPMs(veloCalc(angle)); 
-        double magVelo = Robot.convertLinearVelocityToMag(setVelo, Constants.currentShooterRadius); //may need to use PHASE with the MAG Encoders
+        //double magVelo = Robot.convertLinearVelocityToMag(setVelo, Constants.currentShooterRadius); //may need to use PHASE with the MAG Encoders
 
         double controllerRPMMAG = convertPercentintoMAG(XBoxController.getRawAxis(Constants.LTAxisPort));
 
         if (manual) {
             shooterTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+            shooterFollowerTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+
             System.out.println("Shooters Running at: " + XBoxController.getRawAxis(Constants.LTAxisPort) + "%");
             System.out.println("Velocity is reading as: " + shooterTalon.getSelectedSensorVelocity());
-            shooterFollowerTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+            
+            //Return true if within a degree of error, or else don't
+            double encoderValue = shooterTalon.getSelectedSensorVelocity();
+            if (controllerRPMMAG < encoderValue) {
+            return true; 
+            }
+            else {
+            return false;
+            }  
         }
-        else {
+        else { //Closed-Loop Control of Talons (needs edits)
+            /*
+            shooterTalon.set(ControlMode.Velocity, motorSpeed);
+            shooterFollowerTalon.set(ControlMode.Velocity, motorSpeed); 
+            */
+            double motorSpeed = setVelo / 5000; //may change to Constants.maxVelo (both velos are represented as RPMs)
+            
             shooterTalon.set(motorSpeed);
             shooterFollowerTalon.set(motorSpeed);
-        }
-        //Closed-Loop Control of Talons
 
+            System.out.println("Shooters Running at: " + motorSpeed + "%");
+            System.out.println("Velocity is reading as: " + shooterTalon.getSelectedSensorVelocity());
 
-        //Return true if within a degree of error, or else don't
-        double encoderValue = shooterTalon.getSelectedSensorVelocity();
-        if (controllerRPMMAG < encoderValue) {
-            return true; 
+            double encoderValue = shooterTalon.getSelectedSensorVelocity();
+            if (convertPercentintoMAG(motorSpeed) > encoderValue) {
+                return true;
+            } 
+            else {
+                return false;
+            }
         }
-        else {
-            return false;
-        }  
-        /*
-        if (1000 <= shooterTalon.getSensorCollection().getQuadratureVelocity()) {
-            System.out.println("Encoder says: " + shooterTalon.getSensorCollection().getQuadratureVelocity());
-            return true;
-        }
-        else {
-            return false;
-        } */
-        
-        
     }
 
     public double veloCalc(double angle) {
@@ -121,14 +124,14 @@ public class Shooter_Subsystem extends SubsystemBase {
         //exitVelo = Math.sqrt((Constants.gravitationalAccel * Math.pow(distAway, 2)) / ((distAway * Math.sin(2 * angle)) - (2 * (Constants.towerHeight - Constants.limelightHeight) * Math.pow(Math.cos(Constants.shooterAngle), 2))));
 
         //BMoney's Equation including different heights
-        exitVelo = (distAway * Math.cos(Constants.shooterAngle *Constants.PI / 180)) / 
+        exitVelo = (distAway * Math.cos(Math.toRadians(Constants.shooterAngle))) / 
         (Math.sqrt((2 * (Constants.towerHeight - Constants.limelightHeight)) / 
         Constants.gravitationalAccel));
         return exitVelo;
     }
 
-    public double convertVeloIntoRPMs(double velo) { //converts given velocity into MAG velocity
-        return 1;
+    public double convertVeloIntoRPMs(double velo) { //converts given tangental velocity into MAG velocity
+        return velo * 4 / 4096; // possible = velo * wheelRadius / 4096
     }
 
     public double convertPercentintoMAG(double percentOut) { //takes in a percentage value (<1) and converts into expected MAG Value out
@@ -138,7 +141,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public double findDistance() { //finds distance away from target (tower) in inches...
         //May need to move onto Limelight
-        double angle = (Constants.PI * (Robot.targety + Constants.limelightAngle)) / 180;
+        double angle = Math.toRadians(Robot.targety + Constants.limelightAngle);
         return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle));
     }
     

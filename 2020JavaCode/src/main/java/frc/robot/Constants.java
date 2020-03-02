@@ -116,7 +116,6 @@ public final class Constants {
 
     //PID Control
     public final static int kPIDLoopIdx = 0;
-    public final static double kTimeoutMs = 0;
-
+    public final static int kTimeoutMs = 10;
 
 }
