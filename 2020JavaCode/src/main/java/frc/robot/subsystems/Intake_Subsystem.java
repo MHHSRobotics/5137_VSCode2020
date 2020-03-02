@@ -21,6 +21,7 @@ public class Intake_Subsystem extends SubsystemBase {
     Solenoid rightPiston;
 
     boolean intakeDown = false;
+    boolean toggleIntakeDirection = false;
 
     Pixy2 cartridgepixy;
     Pixy2 intakepixy;
@@ -33,37 +34,27 @@ public class Intake_Subsystem extends SubsystemBase {
         rightPiston = RobotContainer.rightPneumaticPiston;
         cartridgepixy = RobotContainer.cartridgePixy;
         intakepixy = RobotContainer.intakePixy;
+        
     }
 
     @Override
     public void periodic() {
         //getAmmoCount();
+        
     }
 
-    public void toggleIntake() {
-        if (intakeDown) {
-            /*
-            leftPiston.set(true);
-            rightPiston.set(true);
-            */
-            endIntake();
-            intakeDown = false;
-        }
-        else if (!intakeDown) {
-            /*
-            leftPiston.set(true);
-            rightPiston.set(true);
-            */
-            intakeBalls();
-            intakeDown = true;
+    public void toggleIntake(boolean wantsOn, boolean reversed) {
+        if (wantsOn) {
+            intakeBalls(reversed);
         }
         else {
-            //weird catch code
+            endIntake();
         }
+        
     }
 
-    public void intakeBalls() {
-        if (true) {//cartridgepixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
+    public void intakeBalls(boolean reversed) {
+        if (reversed) {//cartridgepixy.getCCC().getBlocks(false, 1, 1) == 1) { //if storage is full...
             /*try { //may need changes for when balls are added, but the cartridge isn't full
             Thread.sleep((long) Constants.intakeWaitTime);
             }
@@ -71,14 +62,13 @@ public class Intake_Subsystem extends SubsystemBase {
             Thread.currentThread().interrupt();
             }
             */
-            intakeVictor.set(ControlMode.Current, -Constants.intakeVictorOutput);
-            System.out.println("Intake is awake...");
+            intakeVictor.set(Constants.intakeVictorOutput);
             System.out.println("Intake Out is :" + intakeVictorOut);
             
         }
         else {
-            intakeVictor.set(ControlMode.Current, Constants.intakeVictorOutput);
-           System.out.println("Intake is sleeping...");
+            intakeVictor.set(-Constants.intakeVictorOutput);
+           
         }
     }
 
@@ -104,7 +94,7 @@ public class Intake_Subsystem extends SubsystemBase {
     } */
 
     public void endIntake() {
-        intakeVictor.set(-Constants.intakeVictorOutput);
+        intakeVictor.set(0);
     }
 
     public void autoIntake() {

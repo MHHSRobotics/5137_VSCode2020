@@ -96,7 +96,8 @@ public final class Constants {
     public final static double limelightHeight = 10.5; //height of limelight in inches
     public final static double gravitationalAccel = 9.8; //acceleration due to gravity
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
-    public final static double turnRate = 0.3; //turn speed based on percentage of drive base output
+    public final static double turnRate = 0.15; //turn speed based on percentage of drive base output
+    public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
     public final static double veloError = 0.05; //amount of variance in m/s that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
     public static long shootTriggerWaitTime = 800; //how long the pneumatics should wait until reseting (in ms)

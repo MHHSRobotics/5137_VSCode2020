@@ -23,11 +23,17 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ArcadeDrive;
-import frc.robot.commands.Intake_Command;
+import frc.robot.commands.AutoShoot_Command;
+import frc.robot.commands.DownwardStorage_Command;
+import frc.robot.commands.ManShoot_Command;
+import frc.robot.commands.OffIntake_Command;
+import frc.robot.commands.OffStorage_Command;
+import frc.robot.commands.OnIntake_Command;
+import frc.robot.commands.ReversedOnIntake_Command;
 import frc.robot.commands.ShootStorage_Command;
-import frc.robot.commands.Shoot_Command;
 import frc.robot.commands.StahpTheShoot_Command;
-import frc.robot.commands.Storage_Command;
+import frc.robot.commands.StopShootStorage_Command;
+import frc.robot.commands.UpwardStorage_Command;
 import frc.robot.subsystems.Climb_Subsystem;
 import frc.robot.subsystems.ControlPanel_Subsystem;
 import frc.robot.subsystems.DriveBase_Subsystem;
@@ -136,8 +142,10 @@ public class RobotContainer {
     public static JoystickButton RBButton; // ...
 
     // Triggers
-    public static Trigger rTrigger;
-    public static Trigger lTrigger;
+    public static Trigger XrTrigger;
+    public static Trigger XlTrigger;
+    public static Trigger ArTrigger;
+    public static Trigger AlTrigger;
 
     // DPad Buttons (names)
     public static POVButton uDPadButton; // Up DPad
@@ -208,37 +216,77 @@ public class RobotContainer {
 
         // Test this, may be good for using axes
         
-        BooleanSupplier booleanSupplyXBox = () -> {
-            if (XBoxController.getRawAxis(Constants.RTAxisPort) > 0.1)
+        BooleanSupplier booleanSupplyXBoxRT = () -> {
+            if (XBoxController.getRawAxis(Constants.RTAxisPort) > 0.1 && XBoxController.getRawAxis(Constants.LTAxisPort) < 0.1)
             {
                 return true;
             } else {
                 return false;
             }
         };
-        BooleanSupplier booleanSupplyAssistant = () -> {
-            if (AssistantController.getRawAxis(Constants.LTAxisPort) > 0.1) {
+        BooleanSupplier booleanSupplyXBoxLT = () -> {
+            if (XBoxController.getRawAxis(Constants.LTAxisPort) > 0.1 && XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1)
+            {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        BooleanSupplier booleanSupplyAssistantRT = () -> {
+            if (AssistantController.getRawAxis(Constants.RTAxisPort) > 0.1 && XBoxController.getRawAxis(Constants.LTAxisPort) < 0.1) {
                 return true;
             } else {
                 return false;
             }
         }; 
-        rTrigger = new Trigger(booleanSupplyXBox);
-        rTrigger.whileActiveContinuous(new Shoot_Command()); //makes shooter engage
+        BooleanSupplier booleanSupplyAssistantLT = () -> {
+            if (AssistantController.getRawAxis(Constants.LTAxisPort) > 0.1 && XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1) {
+                return true;
+            } else {
+                return false;
+            }
+        }; 
+
+        //Automagic Shooter Control
+        XrTrigger = new Trigger(booleanSupplyXBoxRT);
+        XrTrigger.whileActiveContinuous(new AutoShoot_Command()); //makes automatic shooter engage
         // NOTE: this version of whileActiveContinuous override
         // any and all drive base control. May need to change.
-        rTrigger.whileActiveContinuous(new ShootStorage_Command()); //Makes the bottom and top belt go
-        rTrigger.whileActiveOnce(new ArcadeDrive()); //returns regular drivebase control (will toggle between regular and shooter driving)
+        XrTrigger.whileActiveOnce(new ArcadeDrive()); //returns regular drivebase control (will toggle between regular and shooter driving)
+        XrTrigger.whenInactive(new StahpTheShoot_Command());
+        XrTrigger.whenInactive(new StopShootStorage_Command());
 
-        rTrigger.whenInactive(new Storage_Command()); //makes just top belt go
-        rTrigger.whenInactive(new StahpTheShoot_Command()); //stops the shooter (sets talons to 0)
+        //Manual Shooter Control
+        XlTrigger = new Trigger(booleanSupplyXBoxLT);
+        XlTrigger.whileActiveContinuous(new ManShoot_Command()); //makes manual shooter engage
+        XlTrigger.whileActiveOnce(new ArcadeDrive()); //may need to change
+        XlTrigger.whenInactive(new StahpTheShoot_Command());
+        XlTrigger.whenInactive(new StopShootStorage_Command());
+
+
+        AlTrigger = new Trigger(booleanSupplyAssistantLT);
+        AlTrigger.whileActiveContinuous(new OnIntake_Command());
+        AlTrigger.whileActiveContinuous(new UpwardStorage_Command());
+        AlTrigger.whenInactive(new OffIntake_Command());
+        AlTrigger.whenInactive(new OffStorage_Command());
+
+        ArTrigger = new Trigger(booleanSupplyAssistantRT);
+        ArTrigger.whileActiveContinuous(new ReversedOnIntake_Command());
+        ArTrigger.whileActiveContinuous(new DownwardStorage_Command());
+        ArTrigger.whenInactive(new OffStorage_Command());
+        ArTrigger.whenInactive(new OffIntake_Command());
+        
+        
+
+        //rTrigger.whenInactive(new Storage_Command()); //makes just top belt go
+        //rTrigger.whenInactive(new StahpTheShoot_Command()); //stops the shooter (sets talons to 0)
 
         // Sets B Button to do Control Panel Command
         //BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
         //BButton.whenHeld(new ControlPanel_Command());
         
-        XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
-        XButton.toggleWhenPressed(new Intake_Command());
+        //XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
+        //XButton.toggleWhenPressed(new Intake_Command());
         
         /*
         lTrigger = new Trigger(booleanSupplyAssistant);
@@ -262,7 +310,7 @@ public class RobotContainer {
         m_leftDriveTalon = new WPI_TalonSRX(Constants.leftDriveTalonCAN); // other motor controllers will follow this
                                                                           // controller
         m_leftDriveTalon.set(ControlMode.Current, 0);
-        m_leftDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to
+        m_leftDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10); // may need to
                                                                                                        // change configs
                                                                                                        // on MAG Encoder
         double leftDriveOut = m_leftDriveTalon.getSupplyCurrent();
@@ -278,14 +326,13 @@ public class RobotContainer {
         m_rightDriveTalon = new WPI_TalonSRX(Constants.rightDriveTalonCAN); // other motor controllers will follow this
                                                                             // controller
         m_rightDriveTalon.set(ControlMode.Current, 0);
-        m_rightDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to
+        m_rightDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 10); // may need to
                                                                                                         // change
                                                                                                         // configs on
                                                                                                         // MAG Encoder
 
         double rightDriveOut = m_rightDriveTalon.getSupplyCurrent();
         System.out.println("Right drive is going at :" + rightDriveOut);     
-        
         
         m_frontRightVic = new WPI_VictorSPX(Constants.fRightDriveVictorCAN);
         m_frontRightVic.set(ControlMode.Follower, Constants.rightDriveTalonCAN);
@@ -303,7 +350,7 @@ public class RobotContainer {
         controlPanelTalon = new WPI_TalonSRX(Constants.controlPanelCAN);
         controlPanelTalon.set(ControlMode.Velocity, 0);
         controlPanelTalon.setInverted(true);
-        controlPanelTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to
+        controlPanelTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute); // may need to
                                                                                                         // change
                                                                                                         // configs on
                                                                                                         // MAG Encoder
@@ -318,7 +365,8 @@ public class RobotContainer {
         shooterTalon.setInverted(false);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to change
                                                                                                    // configs on MAG
-                                                                                                   // Encoder
+       
+        shooterTalon.setSensorPhase(true); // Encoder is "flipped"
         TalonPID.configTalonPIDValues(shooterTalon, Constants.shooterF, Constants.shooterP, Constants.shooterI, Constants.shooterD);
 
         followerShooterTalon = new WPI_TalonSRX(Constants.followerShooterCAN);

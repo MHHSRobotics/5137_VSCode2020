@@ -24,38 +24,34 @@ public class Storage_Subsystem extends SubsystemBase {
         pixy = RobotContainer.cartridgePixy;
     }
 
-    public void store(boolean overriden, boolean shooting) {
+    public void store(boolean wantsOn, boolean shooting, boolean reversed, boolean reversedMatters) {
         
-        
-        if(!overriden && !shooting) { //switch to checkReadyMove() for true. Does top belt (not shooting, but picking up)
-            lstorageVictor.set(Constants.storageSpeed);
-            rstorageVictor.set(0);
-            //rstorageVictor.set(Constants.storageSpeed);
-        }
-        else if (overriden) { //want to override storage belts, runs both based on override controller, and in the opposite direction
-            lstorageVictor.set(-1 * RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
-            rstorageVictor.set(-1 * RobotContainer.XBoxController.getRawAxis(Constants.LTAxisPort));
-        }
-        else if (shooting){ //if the storage doesn't need to be moving
-            //lstorageVictor.set(Constants.storageSpeed);
-            
-            lstorageVictor.set(Constants.storageSpeed);
+    if (wantsOn) { //l is top, r is bottom belts
+        if(shooting) {
             rstorageVictor.set(Constants.storageSpeed);
         }
-
         else {
-            try { //may need changes for when balls are added, but the cartridge isn't full
-            Thread.sleep((long) Constants.storageWaitTime);
-            }
-            catch(InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            }
-            lstorageVictor.set(ControlMode.Current, 0);
-            rstorageVictor.set(ControlMode.Current, 0);
+            rstorageVictor.set(0);
         }
+        if(reversed && reversedMatters) {
+            lstorageVictor.set(-Constants.storageSpeed);
+        }
+        else if (!reversed && reversedMatters) {
+            lstorageVictor.set(Constants.storageSpeed);
+        }
+        else {
+            //don't reset the top belt
+        }
+        
+    }
+    else {
+        lstorageVictor.set(0);
+        rstorageVictor.set(0);
     }
 
-    public boolean checkReadyToMove() {
+    }
+
+    public boolean checkIfFull() {
 
         if (pixy.getCCC().getBlocks(false, 1, 1) == 1) { //check if it sees the target (pink colored paper)
             return true;

@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -54,22 +55,14 @@ public class Shooter_Subsystem extends SubsystemBase {
             //shooterTalon.set(motorSpeed);
             //shooterFollowerTalon.set(motorSpeed);
         //shooterFollowerTalon.set(motorSpeed);
-        if (XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1) {
+        if (XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1 && XBoxController.getRawAxis(Constants.LTAxisPort) < 0.1) {
             shooterTalon.set(0);
             shooterFollowerTalon.set(0);
         }
     }
 
-    public void shoot(double angle) { //called by command (constantly)      
-        RobotContainer.storage_Subsystem.store(false, false); 
-        shooterTalon.set(motorSpeed);
-        shooterFollowerTalon.set(motorSpeed);
-       if (checkReadyShoot(angle)) { //pnce ready to shoot
-        //RobotContainer.storage_Subsystem.store(false, false);
-       }
-       else { //pnce not ready to shoot
-        //RobotContainer.storage_Subsystem.store(false, true);
-       }
+    public boolean shoot(double angle, boolean overrideDB, boolean manual) { //called by command (constantly)      
+       return checkReadyShoot(angle, overrideDB, manual);
     }
 
     public void endShoot() { /*
@@ -77,27 +70,33 @@ public class Shooter_Subsystem extends SubsystemBase {
         shooterFollowerTalon.set(0); */ 
     }
 
-    public boolean setVelo(double angle) { //return when velocity is running optimally 
-        double setVelo = convertVelo(veloCalc(angle)); 
+    public boolean setVelo(double angle, boolean manual) { //return when velocity is running optimally 
+        double setVelo = convertVeloIntoRPMs(veloCalc(angle)); 
         double magVelo = Robot.convertLinearVelocityToMag(setVelo, Constants.currentShooterRadius); //may need to use PHASE with the MAG Encoders
 
+        double controllerRPMMAG = convertPercentintoMAG(XBoxController.getRawAxis(Constants.LTAxisPort));
+
+        if (manual) {
+            shooterTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+            System.out.println("Shooters Running at: " + XBoxController.getRawAxis(Constants.LTAxisPort) + "%");
+            System.out.println("Velocity is reading as: " + shooterTalon.getSelectedSensorVelocity());
+            shooterFollowerTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+        }
+        else {
+            shooterTalon.set(motorSpeed);
+            shooterFollowerTalon.set(motorSpeed);
+        }
         //Closed-Loop Control of Talons
 
-        //shooterTalon.set(mode, demand0, demand1Type, demand1);
-        
-        //shooterTalon.set(-0.8);
-        //shooterFollowerTalon.set(0);
-        //double error = TalonPID.printOutTalonPIDValues(shooterTalon, setVelo);
 
         //Return true if within a degree of error, or else don't
-        /*
-        if (error <= Constants.veloError && error >= -Constants.veloError) 
-         {
+        double encoderValue = shooterTalon.getSelectedSensorVelocity();
+        if (controllerRPMMAG < encoderValue) {
             return true; 
         }
         else {
             return false;
-        }  */
+        }  
         /*
         if (1000 <= shooterTalon.getSensorCollection().getQuadratureVelocity()) {
             System.out.println("Encoder says: " + shooterTalon.getSensorCollection().getQuadratureVelocity());
@@ -106,7 +105,7 @@ public class Shooter_Subsystem extends SubsystemBase {
         else {
             return false;
         } */
-        return true;
+        
         
     }
 
@@ -128,9 +127,14 @@ public class Shooter_Subsystem extends SubsystemBase {
         return exitVelo;
     }
 
-    public double convertVelo(double velo) { //converts given velocity into MAG velocity
-        return velo * 4096 * 500 / 600;
+    public double convertVeloIntoRPMs(double velo) { //converts given velocity into MAG velocity
+        return 1;
     }
+
+    public double convertPercentintoMAG(double percentOut) { //takes in a percentage value (<1) and converts into expected MAG Value out
+        return percentOut * 100 * 300;
+    }
+
 
     public double findDistance() { //finds distance away from target (tower) in inches...
         //May need to move onto Limelight
@@ -138,10 +142,14 @@ public class Shooter_Subsystem extends SubsystemBase {
         return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle));
     }
     
-    public boolean checkReadyShoot(double angle) {
-        velocityRunningGood = setVelo(angle);
-        //horizontalTurnGood = RobotContainer.driveBase_Subsystem.orientHorizontalTurn();
-        horizontalTurnGood = true;
+    public boolean checkReadyShoot(double angle, boolean horizontalTurnEnabled, boolean manual) {
+        velocityRunningGood = setVelo(angle, manual);
+        if (horizontalTurnEnabled) {
+            horizontalTurnGood = RobotContainer.driveBase_Subsystem.orientHorizontalTurn();
+        }
+        else {
+            horizontalTurnGood = true;
+        }
      
         if (horizontalTurnGood && velocityRunningGood) {
             return true;

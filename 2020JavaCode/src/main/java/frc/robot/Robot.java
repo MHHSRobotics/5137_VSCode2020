@@ -107,26 +107,30 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     //RobotContainer.intake_Subsystem.refreshAmmoCount();, outdated code...
     //RobotContainer.controlPanel_Subsystem.senseColor();
-    /*
+    
+    table = NetworkTableInstance.getDefault().getTable("limelight");
+
     if (RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort) > 0.1) {
       table.getEntry("pipeline").setNumber(1); //sets pipeline number 1-9. 1 is limelight, 2 is not
     }
     else {
       table.getEntry("pipeline").setNumber(2);
-    } */
+    } 
     
     targety = findLimelightValueAverageTY();
     targetx = findLimelightValueAverageTX();
     targetarea = findLimelightValueAverageArea(); 
 
+    /*
     System.out.println("LimelightX in Degrees: " + targetx);
     System.out.println("LimelightY in Degrees: " + targety);
-    System.out.println("LimelightArea in Degrees: " + targetarea);
+    System.out.println("LimelightArea in Degrees: " + targetarea); */
 
     targety = degrees2Radians(targety);
     targetx = degrees2Radians(targetx);
     targetarea = degrees2Radians(targetarea);
 
+    /*
     System.out.println("LimelightX in Radians: " + targetx);
     SmartDashboard.putNumber("LimelightX", targetx);
     System.out.println("LimelightY in Radians: " + targety);
@@ -135,7 +139,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightArea", targetarea);
 
     double temp = ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(targety));
-    System.out.println("Distance is :" + temp);
+    System.out.println("Distance is :" + temp); */
   }
 
   /**
