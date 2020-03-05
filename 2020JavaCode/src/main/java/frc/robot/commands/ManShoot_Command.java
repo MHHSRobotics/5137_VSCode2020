@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter_Subsystem;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class ManShoot_Command extends CommandBase {
 
@@ -19,16 +21,18 @@ public class ManShoot_Command extends CommandBase {
   @Override
   public void initialize() {
       System.out.println("Shooter Be shootin");
+      //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+      //table.getEntry("pipeline").setNumber(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if (RobotContainer.shooter_Subsystem.shoot(Constants.shooterAngle, false, true) == true) {//ready to shoot {
-      RobotContainer.storage_Subsystem.store(true, true, false, false);
+      RobotContainer.storage_Subsystem.store(true, true, false, false, false);
     }
     else {
-      RobotContainer.storage_Subsystem.store(true, false, false, false);
+      RobotContainer.storage_Subsystem.store(true, false, false, false, false);
     }
 
   }
@@ -36,6 +40,9 @@ public class ManShoot_Command extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
+    RobotContainer.shooter_Subsystem.endShoot();
+    //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    //table.getEntry("pipeline").setNumber(1);
   }
 
   // Returns true when the command should end.

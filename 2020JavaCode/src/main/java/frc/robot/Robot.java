@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commandgroups.StartCenter_TurnShootTurnPickup;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
      * Let's head over to it right now to see what it's doing.
      */
 
+    
     ExistingRobot = new RobotContainer();
     System.out.println("Created RobotContainer.");
 
@@ -109,13 +111,6 @@ public class Robot extends TimedRobot {
     //RobotContainer.controlPanel_Subsystem.senseColor();
     
     table = NetworkTableInstance.getDefault().getTable("limelight");
-
-    if (RobotContainer.XBoxController.getRawAxis(Constants.RTAxisPort) > 0.1) {
-      table.getEntry("pipeline").setNumber(1); //sets pipeline number 1-9. 1 is limelight, 2 is not
-    }
-    else {
-      table.getEntry("pipeline").setNumber(2);
-    } 
     
     targety = findLimelightValueAverageTY();
     targetx = findLimelightValueAverageTX();
@@ -162,6 +157,9 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    CommandScheduler.getInstance().schedule(new StartCenter_TurnShootTurnPickup());
+    
     /*
      * Check these out m_autonomousCommand =
      * m_robotContainer.getAutonomousCommand();
@@ -197,8 +195,8 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    // if (m_autonomousCommand != null) { //m_autonomousCommand is a command
-    // m_autonomousCommand.cancel();
+    //if (m_autonomousCommand != null) { //m_autonomousCommand is a command
+    //m_autonomousCommand.cancel();
     // }
   }
 

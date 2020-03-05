@@ -9,28 +9,32 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoShoot_Command;
+import frc.robot.commands.ClimbDown_Command;
+import frc.robot.commands.ClimbUp_Command;
 import frc.robot.commands.DownwardStorage_Command;
 import frc.robot.commands.ManShoot_Command;
 import frc.robot.commands.OffIntake_Command;
 import frc.robot.commands.OffStorage_Command;
 import frc.robot.commands.OnIntake_Command;
 import frc.robot.commands.ReversedOnIntake_Command;
-import frc.robot.commands.ShootStorage_Command;
 import frc.robot.commands.StahpTheShoot_Command;
 import frc.robot.commands.StopShootStorage_Command;
 import frc.robot.commands.UpwardStorage_Command;
@@ -102,8 +106,7 @@ public class RobotContainer {
     public static WPI_VictorSPX rstorageVictor;
 
     // Climb
-    public static WPI_TalonSRX lclimbTalon;
-    public static WPI_TalonSRX rclimbTalon;
+    public static WPI_TalonSRX climbTalon;
 
     // Solenoids:
     public static Compressor compressor;
@@ -168,6 +171,11 @@ public class RobotContainer {
     public static ShuffleboardTab diagnosticTab;
     public static ShuffleboardTab liveWindowTab;
 
+    public static Timer timer;
+
+    public static DigitalInput LimitSwitchUpper;
+    public static DigitalInput LimitSwitchLower;
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -176,8 +184,6 @@ public class RobotContainer {
         // Similar to RobotMap, now we are going to create all the subsystem objects
         // (for commands)
         InitMap();
-
-        // Configure the button bindings
         /*controlPanel_Subsystem = new ControlPanel_Subsystem();
 
         */
@@ -193,11 +199,10 @@ public class RobotContainer {
         storage_Subsystem = new Storage_Subsystem();
         shooter_Subsystem = new Shooter_Subsystem();
         driveBase_Subsystem = new DriveBase_Subsystem();
-
+        climb_Subsystem = new Climb_Subsystem();
+        // Configure the button bindings
         configureButtonBindings();
         
-        
-
         // Set creation of other objects (like cameras)
 
         // For cameras, set defaults here (like resolution, framerate, ...)
@@ -249,7 +254,7 @@ public class RobotContainer {
 
         //Automagic Shooter Control
         XrTrigger = new Trigger(booleanSupplyXBoxRT);
-        XrTrigger.whileActiveContinuous(new AutoShoot_Command()); //makes automatic shooter engage
+        XrTrigger.whileActiveContinuous(new AutoShoot_Command(0)); //makes automatic shooter engage
         // NOTE: this version of whileActiveContinuous override
         // any and all drive base control. May need to change.
         XrTrigger.whileActiveOnce(new ArcadeDrive()); //returns regular drivebase control (will toggle between regular and shooter driving)
@@ -263,7 +268,6 @@ public class RobotContainer {
         XlTrigger.whenInactive(new StahpTheShoot_Command());
         XlTrigger.whenInactive(new StopShootStorage_Command());
 
-
         AlTrigger = new Trigger(booleanSupplyAssistantLT);
         AlTrigger.whileActiveContinuous(new OnIntake_Command());
         AlTrigger.whileActiveContinuous(new UpwardStorage_Command());
@@ -276,14 +280,20 @@ public class RobotContainer {
         ArTrigger.whenInactive(new OffStorage_Command());
         ArTrigger.whenInactive(new OffIntake_Command());
 
-        //RBButton needs testing
         RBButton = new JoystickButton(AssistantController, Constants.RButtonPort);
         RBButton.whileActiveContinuous(new ReversedOnIntake_Command());
         RBButton.whenInactive(new OffIntake_Command());
         RBButton.whenInactive(new OffStorage_Command());
-        
-        
 
+        LBButton = new JoystickButton(AssistantController, Constants.LBButtonPort);
+        LBButton.whileActiveContinuous(new OnIntake_Command());
+        LBButton.whenInactive(new OffIntake_Command());
+        LBButton.whenInactive(new OffStorage_Command());
+        
+        AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
+        AButton.whileActiveContinuous(new ClimbUp_Command());
+        AButton.whenInactive(new ClimbDown_Command());
+        
         //rTrigger.whenInactive(new Storage_Command()); //makes just top belt go
         //rTrigger.whenInactive(new StahpTheShoot_Command()); //stops the shooter (sets talons to 0)
 
@@ -294,18 +304,11 @@ public class RobotContainer {
         //XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
         //XButton.toggleWhenPressed(new Intake_Command());
         
-        /*
-        lTrigger = new Trigger(booleanSupplyAssistant);
-        lTrigger.whileActiveContinuous(new OverrideStorage_Command());
-        lTrigger.cancelWhenActive(new Storage_Command());
-        lTrigger.whenInactive(new Storage_Command());
-        */
-
-        // need to add climb trigger...
-        
     }
 
     public void InitMap() {
+
+        timer = new Timer();
 
         // Shuffle Board initialization:
         diagnosticTab = Shuffleboard.getTab("Diagnostics");
@@ -367,20 +370,22 @@ public class RobotContainer {
 
         // Init Shooter Motors
         shooterTalon = new WPI_TalonSRX(Constants.shooterCAN);
-        shooterTalon.set(ControlMode.Velocity, 0);
         shooterTalon.setInverted(false);
         shooterTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10); // may need to change
                                                                                                    // configs on MAG
-
-        shooterTalon.config_kF(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
-        shooterTalon.config_kP(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
+        shooterTalon.selectProfileSlot(Constants.kPIDLoopIdx, 0);
+        shooterTalon.config_kF(Constants.kPIDLoopIdx, 0.0330, Constants.kTimeoutMs);
+        shooterTalon.config_kP(Constants.kPIDLoopIdx, 0.2, Constants.kTimeoutMs);
         shooterTalon.config_kI(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
         shooterTalon.config_kD(Constants.kPIDLoopIdx, 0, Constants.kTimeoutMs);
-       
+        shooterTalon.config_IntegralZone(Constants.kPIDLoopIdx, 100, 0);
+        shooterTalon.configClosedLoopPeakOutput(Constants.kPIDLoopIdx, 1.0, Constants.kTimeoutMs);
         shooterTalon.setSensorPhase(true); // Encoder is "flipped"
-        TalonPID.configTalonPIDValues(shooterTalon, Constants.shooterF, Constants.shooterP, Constants.shooterI, Constants.shooterD);
+        shooterTalon.set(ControlMode.Velocity, 0);
 
         followerShooterTalon = new WPI_TalonSRX(Constants.followerShooterCAN);
+        followerShooterTalon.configClosedLoopPeakOutput(Constants.kPIDLoopIdx, 1.0, Constants.kTimeoutMs);
+        followerShooterTalon.selectProfileSlot(Constants.kPIDLoopIdx, 0);
         followerShooterTalon.set(ControlMode.Follower, Constants.shooterCAN);
 
         // Init Storage Motors
@@ -392,13 +397,15 @@ public class RobotContainer {
         rstorageVictor.set(ControlMode.Current, 0);
 
         // Init Climb Motors (needs to change)
-        lclimbTalon = new WPI_TalonSRX(Constants.lclimbCAN);
-        lclimbTalon.set(ControlMode.Current, 0);
-        rclimbTalon = new WPI_TalonSRX(Constants.rclimbCAN);
-        rclimbTalon.set(ControlMode.Current, 0);
+        climbTalon = new WPI_TalonSRX(Constants.lclimbCAN);
+        climbTalon.set(ControlMode.Current, 0);
+        climbTalon.setInverted(true);
 
         // Sensor Init
         colorSensor = new ColorSensorV3(i2cPort);
+
+        LimitSwitchUpper = new DigitalInput(Constants.LimitSwitchUpperDIOPort);
+        LimitSwitchLower = new DigitalInput(Constants.LimitSwitchLowerDIOPort);
 
         /*
         spiLink = new SPILink();
@@ -418,10 +425,11 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    // public Command getAutonomousCommand() {
+    /*
+    public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    // Command m_autoCommand = ;
-    // return m_autoCommand;
-    // }
+    Command m_autoCommand = //;
+    return m_autoCommand;
+    } */
 
 }

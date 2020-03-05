@@ -8,6 +8,7 @@ public final class Constants {
     public final static double PI = 3.1415;
     public final static double CPWheelCircum = 25.1; //8P inches
     public final static double SpinWheel = 4.0;
+    public final static double shooterWheelDiameter = 6;
     //---------------------------------------//
 
     //Used for OI
@@ -64,9 +65,9 @@ public final class Constants {
     public final static int rclimbCAN = 14;             //A1
 
     //---------------------------------------//
-    public final static double driveSensitivity = 2.0; //bigger # means less sensitivity, from 0.5 to 2.0
+    public final static double driveSensitivity = 1.0; //bigger # means less sensitivity, from 0.5 to 2.0
     //10.0: baby speed, 9.0: tdddler mode, 7.0: fast toddler mode, 5.0: optimal turn speed, 4.5:
-    public final static double turnSensitivity = 4.0; //4.5 seems nice
+    public final static double turnSensitivity = 3.0; //4.5 seems nice
     public final static boolean isQuickTurn = true; //makes turning the drive base able to override constant-curvature turning for turn-in-place maneuvers.
     //Used for ...
 
@@ -94,19 +95,20 @@ public final class Constants {
     public final static double shooterAngle = 25.0; //angle of shooter in degrees of the horizontal (right now is (69.0 * PI) / 180 radians)
     public final static double towerHeight = 98.25; //height of power tower in inches
     public final static double limelightHeight = 10.5; //height of limelight in inches
-    public final static double gravitationalAccel = 9.8; //acceleration due to gravity
+    public final static double shooterHeight = 37.0; //height of shooter in inches
+    public final static double gravitationalAccel = -9.8; //acceleration due to gravity
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
     public final static double turnRate = 0.15; //turn speed based on percentage of drive base output
     public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
-    public final static double veloError = 0.05; //amount of variance in m/s that the motor will allow to shoot
+    public final static double veloError = 100; //amount of variance in encoder units that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
-    public static long shootTriggerWaitTime = 800; //how long the pneumatics should wait until reseting (in ms)
     public final static double shooterF = 0.0; //F Val for shooter PID
     public final static double shooterP = 0.0; //... 
     public final static double shooterI = 0.0;
     public final static double shooterD = 0.0;
-    public final static double limelightAngle = 28.0;
-
+    public final static double limelightAngle = 61.0;
+    public final static double limelightAwayShooter = 10.2; //distance from limelight to shooter (depth, not height)
+    public final static double maxVeloShooter = 32500;
 
     //Storage
     //---------------------------------------//
@@ -114,8 +116,13 @@ public final class Constants {
     public final static int pixyLEDBrightness = 255;
     public final static int storageWaitTime = 2000; //wait time to allow belt motors to continue for until it finds the target (in ms)
 
+    public final static double climbTime = 0.1;
+
     //PID Control
     public final static int kPIDLoopIdx = 0;
     public final static int kTimeoutMs = 10;
 
+    //Sensors
+    public final static int LimitSwitchUpperDIOPort = 0;
+    public final static int LimitSwitchLowerDIOPort = 1;
 }

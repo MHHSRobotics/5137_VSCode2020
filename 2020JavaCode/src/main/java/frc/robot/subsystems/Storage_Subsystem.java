@@ -24,7 +24,7 @@ public class Storage_Subsystem extends SubsystemBase {
         pixy = RobotContainer.cartridgePixy;
     }
 
-    public void store(boolean wantsOn, boolean shooting, boolean reversed, boolean reversedMatters) {
+    public void store(boolean wantsOn, boolean shooting, boolean reversed, boolean reversedMatters, boolean wantsBottomBeltReversed) {
         
     if (wantsOn) { //l is top, r is bottom belts
         if(shooting) {
@@ -42,6 +42,10 @@ public class Storage_Subsystem extends SubsystemBase {
         else {
             //don't reset the top belt
         }
+        if (wantsBottomBeltReversed) {
+            rstorageVictor.set(-Constants.storageSpeed);
+        }
+        
         
     }
     else {

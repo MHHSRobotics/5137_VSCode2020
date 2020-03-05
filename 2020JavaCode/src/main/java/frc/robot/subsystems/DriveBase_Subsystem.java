@@ -88,14 +88,14 @@ public class DriveBase_Subsystem extends SubsystemBase {
 
 	public boolean orientHorizontalTurn() { //returns true if the robot is horizontally oriented, false if interrupted
         if (Robot.targetx >= Constants.marginAngleError) { //if too far to the left
-			//BMoneysDifferentialDrive.curvatureDrive(0.0, Constants.turnRate, true); //turn cntrclockwise
-			BMoneysDifferentialDrive.curvatureDrive(0.0, Robot.targetx/Constants.turnSpeed, true);
+			BMoneysDifferentialDrive.curvatureDrive(0.0, Constants.turnRate, true); //turn cntrclockwise
+			//BMoneysDifferentialDrive.curvatureDrive(0.0, Robot.targetx/Constants.turnSpeed, true);
             return false;
             
         }
         else if (Robot.targetx <= -Constants.marginAngleError) { //too far to the right
-			//BMoneysDifferentialDrive.curvatureDrive(0.0, -Constants.turnRate, true); //turn clockwise
-			BMoneysDifferentialDrive.curvatureDrive(0.0, Robot.targetx/Constants.turnSpeed, true);
+			BMoneysDifferentialDrive.curvatureDrive(0.0, -Constants.turnRate, true); //turn clockwise
+			//BMoneysDifferentialDrive.curvatureDrive(0.0, Robot.targetx/Constants.turnSpeed, true);
             return false;
         }
         else {

@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -14,11 +13,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.TalonPID;
-
 
 public class Shooter_Subsystem extends SubsystemBase {
-    //Variable declarations go here...
+    // Variable declarations go here...
     DifferentialDrive BMoneysDriveBase;
 
     WPI_TalonSRX shooterTalon;
@@ -32,89 +29,122 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     boolean horizontalTurnGood;
     boolean velocityRunningGood;
-    boolean toggle;
-    
+
+    NetworkTable table;
+
     public Shooter_Subsystem() {
-        //Variable assignment goes here...
+        // Variable assignment goes here...
         XBoxController = RobotContainer.XBoxController;
         BMoneysDriveBase = RobotContainer.BMoneysDriveBase;
         shooterTalon = RobotContainer.shooterTalon;
         shooterFollowerTalon = RobotContainer.followerShooterTalon;
         shootPneumaticPistonOne = RobotContainer.shootPneumaticPistonOne;
-        toggle = false;
         horizontalTurnGood = false;
         velocityRunningGood = false;
+        table = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
     @Override
     public void periodic() {
+        table = NetworkTableInstance.getDefault().getTable("limelight");
         distAway = findDistance();
+        System.out.println("Distance away is: " + distAway);
             //shooterTalon.set(motorSpeed);
             //shooterFollowerTalon.set(motorSpeed);
         //shooterFollowerTalon.set(motorSpeed);
+        /*
         if (XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1 && XBoxController.getRawAxis(Constants.LTAxisPort) < 0.1) {
-            shooterTalon.set(0);
-            shooterFollowerTalon.set(0);
-        }
+            shooterTalon.set(ControlMode.Velocity, 0); //changed
+            shooterFollowerTalon.set(ControlMode.Velocity, 0);
+        } */
     }
 
     public boolean shoot(double angle, boolean overrideDB, boolean manual) { //called by command (constantly)      
        return checkReadyShoot(angle, overrideDB, manual);
     }
 
-    public void endShoot() { /*
-        shooterTalon.set(0);
-        shooterFollowerTalon.set(0); */ 
+    public void endShoot() { 
+        shooterTalon.set(ControlMode.Velocity, 0);
+        shooterFollowerTalon.set(ControlMode.Velocity, 0); 
     }
 
     public boolean setVelo(double angle, boolean manual) { //return when velocity is running optimally 
-        double setVelo = convertVeloIntoRPMs(veloCalc(angle)); 
-        //double magVelo = Robot.convertLinearVelocityToMag(setVelo, Constants.currentShooterRadius); //may need to use PHASE with the MAG Encoders
+        double setVelo = convertLinearVeloToMAG(veloCalc(angle)); 
 
-        double controllerRPMMAG = convertPercentintoMAG(XBoxController.getRawAxis(Constants.LTAxisPort));
+        double controllerMAGVelo = Constants.maxVeloShooter * XBoxController.getRawAxis(Constants.LTAxisPort);
 
         if (manual) {
-            shooterTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
-            shooterFollowerTalon.set(XBoxController.getRawAxis(Constants.LTAxisPort));
+
+            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 is limelight, 2 is not
+
+            shooterTalon.set(ControlMode.Velocity, controllerMAGVelo);
+            shooterFollowerTalon.set(ControlMode.Follower, Constants.shooterCAN);
 
             System.out.println("Shooters Running at: " + XBoxController.getRawAxis(Constants.LTAxisPort) + "%");
             System.out.println("Velocity is reading as: " + shooterTalon.getSelectedSensorVelocity());
             
             //Return true if within a degree of error, or else don't
             double encoderValue = shooterTalon.getSelectedSensorVelocity();
-            if (controllerRPMMAG < encoderValue) {
+
+            if ((controllerMAGVelo <= (encoderValue + Constants.veloError)) && 
+            (controllerMAGVelo >= (encoderValue - Constants.veloError))) {
             return true; 
             }
             else {
             return false;
             }  
         }
-        else { //Closed-Loop Control of Talons (needs edits)
-            /*
-            shooterTalon.set(ControlMode.Velocity, motorSpeed);
-            shooterFollowerTalon.set(ControlMode.Velocity, motorSpeed); 
-            */
-            double motorSpeed = setVelo / 5000; //may change to Constants.maxVelo (both velos are represented as RPMs)
-            
-            shooterTalon.set(motorSpeed);
-            shooterFollowerTalon.set(motorSpeed);
+        else { //AutoShootingAlgorithm
 
-            System.out.println("Shooters Running at: " + motorSpeed + "%");
+            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 is limelight, 2 is not
+            
+            shooterTalon.set(ControlMode.Velocity, setVelo);
+            shooterFollowerTalon.set(ControlMode.Velocity, setVelo); 
+        
+            /*
+            double motorOutput = shooterTalon.getMotorOutputPercent();
+
+            System.out.println("\tout: " + (int) (motorOutput * 100) + "%");
+            System.out.println("\tspd: " + shooterTalon.getSelectedSensorVelocity(Constants.kPIDLoopIdx) + "u");
+            
+            double targetVelocity_UniterPer100ms = setVelo * 500.0 * 4096 / 600;
+            shooterTalon.set(ControlMode.Velocity, targetVelocity_UniterPer100ms, DemandType.AuxPID, targetVelocity_UniterPer100ms);
+
+            System.out.println("\terr: " + shooterTalon.getClosedLoopError(Constants.kPIDLoopIdx) + "\ttrg: " + targetVelocity_UniterPer100ms);
+
+            */
+
+            /*
+            double targetVelocity_UnitsPer100ms = leftYstick * 500.0 * 4096 / 600;
+			// 500 RPM in either direction 
+			_talon.set(ControlMode.Velocity, targetVelocity_UnitsPer100ms);
+
+			// Append more signals to print when in speed mode. 
+			_sb.append("\terr:");
+			_sb.append(_talon.getClosedLoopError(Constants.kPIDLoopIdx));
+			_sb.append("\ttrg:");
+            _sb.append(targetVelocity_UnitsPer100ms); 
+            */
+
+            System.out.println("Shooters Running at: " + shooterTalon.getMotorOutputPercent() + "%");
             System.out.println("Velocity is reading as: " + shooterTalon.getSelectedSensorVelocity());
 
             double encoderValue = shooterTalon.getSelectedSensorVelocity();
-            if (convertPercentintoMAG(motorSpeed) > encoderValue) {
-                return true;
-            } 
-            else {
-                return false;
+
+            if ((setVelo <= (encoderValue + Constants.veloError)) && 
+            (setVelo >= (encoderValue - Constants.veloError))) {
+            return true; 
             }
+            else {
+            return false;
+            }  
         }
     }
 
-    public double veloCalc(double angle) {
+    public double veloCalc(double angle) {//returns value of shooter velocity in inches per second (returns NaN if negative)
         double exitVelo = 0.0;
-        distAway = findDistance();
+        distAway = findDistance() + Constants.limelightAwayShooter;
+        double heightTraveledUp = Constants.towerHeight - Constants.shooterHeight; //needs changes
 
         //used to debug distance value
         System.out.println("Distance from target is : " + distAway);
@@ -123,26 +153,42 @@ public class Shooter_Subsystem extends SubsystemBase {
         //put calculations with everything here... (thanks to Ashwin) (subject to change, since these calcs assume that the launch is from the ground)
         //exitVelo = Math.sqrt((Constants.gravitationalAccel * Math.pow(distAway, 2)) / ((distAway * Math.sin(2 * angle)) - (2 * (Constants.towerHeight - Constants.limelightHeight) * Math.pow(Math.cos(Constants.shooterAngle), 2))));
 
-        //BMoney's Equation including different heights
+        //BMoney's Equation including different heights 
+        /*
         exitVelo = (distAway * Math.cos(Math.toRadians(Constants.shooterAngle))) / 
         (Math.sqrt((2 * (Constants.towerHeight - Constants.limelightHeight)) / 
-        Constants.gravitationalAccel));
+        Constants.gravitationalAccel)); */
+
+        //This is the REAL BMoney's Equation including different heights (don't believe the other one, it's fake), ask him for proof or something
+        /*
+
+        h = TowerHeight - ShooterHeight
+        a = shooter Angle
+
+            v(d) = Math.sqrt             (   g * d^2     )
+                                          ---------------
+                            (  h * cos(a)^2 - cos(a)^2 * tan(a) * d  )
+        */
+        exitVelo = Math.sqrt((Constants.gravitationalAccel * Math.pow(distAway, 2)) / 
+        (heightTraveledUp * Math.pow(Math.cos(Math.toRadians(Constants.shooterAngle)), 2) - Math.pow(Math.cos(Math.toRadians(Constants.shooterAngle)), 2)
+        * Math.tan(Math.toRadians(Constants.shooterAngle)) * distAway));
         return exitVelo;
     }
 
-    public double convertVeloIntoRPMs(double velo) { //converts given tangental velocity into MAG velocity
-        return velo * 4 / 4096; // possible = velo * wheelRadius / 4096
-    }
-
-    public double convertPercentintoMAG(double percentOut) { //takes in a percentage value (<1) and converts into expected MAG Value out
-        return percentOut * 100 * 300;
+    public double convertLinearVeloToMAG(double lin_velo) { //converts linear velocity (in/s) on the end of the wheel to 
+        return (4096 * lin_velo) / (60 * Constants.PI);
     }
 
 
-    public double findDistance() { //finds distance away from target (tower) in inches...
+    public double findDistance() { //finds distance away from target (tower) to shooter in inches...
         //May need to move onto Limelight
+
+        //shooter is 14 inches higher than limelight (as of 3/4/2020)
+
+        //shooter is 10.2 in away from limelight (as of 3/4/2020)
+
         double angle = Math.toRadians(Robot.targety + Constants.limelightAngle);
-        return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle));
+        return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle)) + Constants.limelightAwayShooter;
     }
     
     public boolean checkReadyShoot(double angle, boolean horizontalTurnEnabled, boolean manual) {
