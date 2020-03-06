@@ -36,6 +36,7 @@ import frc.robot.commands.OffStorage_Command;
 import frc.robot.commands.OnIntake_Command;
 import frc.robot.commands.ReversedOnIntake_Command;
 import frc.robot.commands.StahpTheShoot_Command;
+import frc.robot.commands.StopClimb_Command;
 import frc.robot.commands.StopShootStorage_Command;
 import frc.robot.commands.UpwardStorage_Command;
 import frc.robot.subsystems.Climb_Subsystem;
@@ -292,8 +293,13 @@ public class RobotContainer {
         
         AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
         AButton.whileActiveContinuous(new ClimbUp_Command());
-        AButton.whenInactive(new ClimbDown_Command());
-        
+        AButton.whenInactive(new StopClimb_Command());
+        //AButton.whenInactive(new ClimbDown_Command());
+
+        BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+        BButton.whileActiveContinuous(new ClimbDown_Command());
+        BButton.whenInactive(new StopClimb_Command());
+
         //rTrigger.whenInactive(new Storage_Command()); //makes just top belt go
         //rTrigger.whenInactive(new StahpTheShoot_Command()); //stops the shooter (sets talons to 0)
 

@@ -29,6 +29,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     boolean horizontalTurnGood;
     boolean velocityRunningGood;
+    boolean LimelightKnowsManual;
 
     NetworkTable table;
 
@@ -46,21 +47,27 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        table = NetworkTableInstance.getDefault().getTable("limelight");
+        
         distAway = findDistance();
-        System.out.println("Distance away is: " + distAway);
+        //System.out.println("Distance away is: " + distAway);
             //shooterTalon.set(motorSpeed);
             //shooterFollowerTalon.set(motorSpeed);
         //shooterFollowerTalon.set(motorSpeed);
-        /*
-        if (XBoxController.getRawAxis(Constants.RTAxisPort) < 0.1 && XBoxController.getRawAxis(Constants.LTAxisPort) < 0.1) {
-            shooterTalon.set(ControlMode.Velocity, 0); //changed
-            shooterFollowerTalon.set(ControlMode.Velocity, 0);
-        } */
+        table = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
-    public boolean shoot(double angle, boolean overrideDB, boolean manual) { //called by command (constantly)      
-       return checkReadyShoot(angle, overrideDB, manual);
+    public boolean shoot(double angle, boolean overrideDB, boolean manual) { //called by command (constantly)  
+        LimelightKnowsManual = manual;  
+        if (LimelightKnowsManual) {
+            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 isnt limelight, 2 is 
+        } 
+        else if (!LimelightKnowsManual) {
+            table.getEntry("pipeline").setNumber(1); //sets pipeline number 1-9. 1 isnt limelight, 2 is 
+        }
+        else {
+            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 isnt limelight, 2 is 
+        }  
+        return checkReadyShoot(angle, overrideDB, manual);
     }
 
     public void endShoot() { 
@@ -74,8 +81,6 @@ public class Shooter_Subsystem extends SubsystemBase {
         double controllerMAGVelo = Constants.maxVeloShooter * XBoxController.getRawAxis(Constants.LTAxisPort);
 
         if (manual) {
-
-            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 is limelight, 2 is not
 
             shooterTalon.set(ControlMode.Velocity, controllerMAGVelo);
             shooterFollowerTalon.set(ControlMode.Follower, Constants.shooterCAN);
@@ -95,8 +100,6 @@ public class Shooter_Subsystem extends SubsystemBase {
             }  
         }
         else { //AutoShootingAlgorithm
-
-            table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 is limelight, 2 is not
             
             shooterTalon.set(ControlMode.Velocity, setVelo);
             shooterFollowerTalon.set(ControlMode.Velocity, setVelo); 

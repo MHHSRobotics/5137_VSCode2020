@@ -47,7 +47,7 @@ public class AutoShoot_Command extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
-    RobotContainer.shooter_Subsystem.endShoot();
+    //RobotContainer.shooter_Subsystem.endShoot();
     //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     //table.getEntry("pipeline").setNumber(1);
   }
@@ -55,12 +55,14 @@ public class AutoShoot_Command extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-      if (timer.get() < Ourtime) {
+      
+    if (timer.get() < Ourtime) {
         return false;
       }
       else {
         return true;
-      }
+      } 
+      //return true;
   }
 
   

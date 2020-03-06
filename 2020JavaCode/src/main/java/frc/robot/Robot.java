@@ -158,7 +158,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
-    CommandScheduler.getInstance().schedule(new StartCenter_TurnShootTurnPickup());
+    //CommandScheduler.getInstance().schedule(new StartCenter_TurnShootTurnPickup());
     
     /*
      * Check these out m_autonomousCommand =

@@ -100,7 +100,7 @@ public final class Constants {
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
     public final static double turnRate = 0.15; //turn speed based on percentage of drive base output
     public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
-    public final static double veloError = 100; //amount of variance in encoder units that the motor will allow to shoot
+    public final static double veloError = 250; //amount of variance in encoder units that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
     public final static double shooterF = 0.0; //F Val for shooter PID
     public final static double shooterP = 0.0; //... 
@@ -124,5 +124,5 @@ public final class Constants {
 
     //Sensors
     public final static int LimitSwitchUpperDIOPort = 0;
-    public final static int LimitSwitchLowerDIOPort = 1;
+    public final static int LimitSwitchLowerDIOPort = 2;
 }

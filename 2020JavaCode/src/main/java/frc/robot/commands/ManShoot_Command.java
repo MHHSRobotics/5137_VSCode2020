@@ -40,7 +40,7 @@ public class ManShoot_Command extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
-    RobotContainer.shooter_Subsystem.endShoot();
+    //RobotContainer.shooter_Subsystem.endShoot();
     //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     //table.getEntry("pipeline").setNumber(1);
   }
