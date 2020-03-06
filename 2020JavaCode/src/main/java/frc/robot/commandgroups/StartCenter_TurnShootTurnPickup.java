@@ -6,31 +6,26 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.ArcadeDrive;
+import frc.robot.commands.AutoAutoShoot_Command;
+import frc.robot.commands.AutoDriveForward_Command;
 import frc.robot.commands.AutoShoot_Command;
 import frc.robot.commands.OffIntake_Command;
 import frc.robot.commands.OnIntake_Command;
 import frc.robot.commands.UpwardStorage_Command;
+import frc.robot.subsystems.DriveBase_Subsystem;
 
 public class StartCenter_TurnShootTurnPickup extends SequentialCommandGroup {
 
-    AutoShoot_Command autoShoot_Command;
-    ArcadeDrive arcadeDrive;
-    OnIntake_Command onIntake_Command;
-    OffIntake_Command offIntake_Command;
-    UpwardStorage_Command upwardStorage_Command;
-    Timer timer;
-
-    //WaitUntilCommand waitCommand;
-
-    public StartCenter_TurnShootTurnPickup() {
+    public StartCenter_TurnShootTurnPickup(DriveBase_Subsystem db) {
         addCommands(
-            new AutoShoot_Command(1.0) //,
+            new AutoDriveForward_Command(2.0, 1.0),
+            new OnIntake_Command(),
+            new AutoAutoShoot_Command(1)
+            );//,
            /* new ArcadeDrive(), 
             new OnIntake_Command(), 
             new OffIntake_Command()
-            */);
-        
-        
+            */
     }
 
     

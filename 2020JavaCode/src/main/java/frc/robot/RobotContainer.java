@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commandgroups.StartCenter_TurnShootTurnPickup;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoShoot_Command;
 import frc.robot.commands.ClimbDown_Command;
@@ -255,7 +256,7 @@ public class RobotContainer {
 
         //Automagic Shooter Control
         XrTrigger = new Trigger(booleanSupplyXBoxRT);
-        XrTrigger.whileActiveContinuous(new AutoShoot_Command(0)); //makes automatic shooter engage
+        XrTrigger.whileActiveContinuous(new AutoShoot_Command(driveBase_Subsystem));//makes automatic shooter engage
         // NOTE: this version of whileActiveContinuous override
         // any and all drive base control. May need to change.
         XrTrigger.whileActiveOnce(new ArcadeDrive()); //returns regular drivebase control (will toggle between regular and shooter driving)
@@ -294,7 +295,6 @@ public class RobotContainer {
         AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
         AButton.whileActiveContinuous(new ClimbUp_Command());
         AButton.whenInactive(new StopClimb_Command());
-        //AButton.whenInactive(new ClimbDown_Command());
 
         BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
         BButton.whileActiveContinuous(new ClimbDown_Command());
@@ -431,11 +431,25 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    /*
-    public Command getAutonomousCommand() {
+    
+    public static Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    Command m_autoCommand = //;
-    return m_autoCommand;
-    } */
+
+    //This might go here...
+    /*
+    switch (m_autoSelected) {
+        case kCustomAuto:
+          // Put custom auto code here
+          break;
+        case kDefaultAuto:
+        default:
+          // Put default auto code here
+          break;
+        } */
+
+    //Does the data type need to be a command? Or is this good?
+    StartCenter_TurnShootTurnPickup startCenter_TurnShootTurnPickup = new StartCenter_TurnShootTurnPickup(driveBase_Subsystem);
+    return startCenter_TurnShootTurnPickup;
+    } 
 
 }

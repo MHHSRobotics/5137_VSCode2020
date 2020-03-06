@@ -11,7 +11,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,7 +27,11 @@ import frc.robot.commandgroups.StartCenter_TurnShootTurnPickup;
 public class Robot extends TimedRobot {
   public static RobotContainer ExistingRobot;
 
-  private Command autoCommand; // Need to use for auto? Does this act like a placeholder?
+  //private Command autoCommand; // Need to use for auto? Does this act like a placeholder?
+
+  public StartCenter_TurnShootTurnPickup startCenter_TurnShootTurnPickup;
+
+  public Command m_autonomousCommand;
 
   NetworkTable table;
   NetworkTableEntry tx;
@@ -42,6 +45,7 @@ public class Robot extends TimedRobot {
   // Template Declarations, CHANGES NEEDED?
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kStartCenter_TurnShoot = "kStartCenter_TurnShoot";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -59,7 +63,6 @@ public class Robot extends TimedRobot {
      * is call RobotContainer. This means it calls the method RobotContainer().
      * Let's head over to it right now to see what it's doing.
      */
-
     
     ExistingRobot = new RobotContainer();
     System.out.println("Created RobotContainer.");
@@ -72,6 +75,7 @@ public class Robot extends TimedRobot {
     // Default template stuff
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("StartCenter_TurnShoot...", kStartCenter_TurnShoot);
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
@@ -167,6 +171,11 @@ public class Robot extends TimedRobot {
      * // schedule the autonomous command (example) if (m_autonomousCommand != null)
      * { m_autonomousCommand.schedule(); }
      */
+
+     m_autonomousCommand = RobotContainer.getAutonomousCommand();
+
+     if (m_autonomousCommand != null) {
+        m_autonomousCommand.schedule(); }
   }
 
   /**
@@ -178,6 +187,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    //This really doesn't belong here!!!
+    /*
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -187,6 +198,7 @@ public class Robot extends TimedRobot {
       // Put default auto code here
       break;
     }
+    */
   }
 
   @Override

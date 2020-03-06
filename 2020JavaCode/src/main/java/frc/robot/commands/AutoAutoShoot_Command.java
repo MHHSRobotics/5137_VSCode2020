@@ -8,12 +8,16 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.DriveBase_Subsystem;
 import frc.robot.subsystems.Shooter_Subsystem;
 
-public class AutoShoot_Command extends CommandBase {
+public class AutoAutoShoot_Command extends CommandBase {
 
-    public AutoShoot_Command(DriveBase_Subsystem driveBase_Subsystem) {
+    boolean dontSpam = true;
+    int BallsShotCounter = 0;
+    int shootXAmntBalls;
+
+    public AutoAutoShoot_Command(int shootXBalls) {
+        shootXAmntBalls = shootXBalls;
         addRequirements(RobotContainer.shooter_Subsystem);
         addRequirements(RobotContainer.driveBase_Subsystem);
         addRequirements(RobotContainer.storage_Subsystem); 
@@ -23,6 +27,8 @@ public class AutoShoot_Command extends CommandBase {
   @Override
   public void initialize() {
       System.out.println("Shooter Be shootin");
+      //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+      //table.getEntry("pipeline").setNumber(1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -30,9 +36,14 @@ public class AutoShoot_Command extends CommandBase {
   public void execute() {
     if (RobotContainer.shooter_Subsystem.shoot(Constants.shooterAngle, true, false) == true) {
       RobotContainer.storage_Subsystem.store(true, true, false, false, false);
+      if (dontSpam) {
+          BallsShotCounter++;
+          dontSpam = false;
+      }
     }
     else {
       RobotContainer.storage_Subsystem.store(true, false, false, false, false);
+      dontSpam = true;
     }
   
   }
@@ -47,9 +58,12 @@ public class AutoShoot_Command extends CommandBase {
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() {
-      return true;
+  public boolean isFinished() { //depends on if PID is dialed in
+    if (BallsShotCounter == shootXAmntBalls) {
+        return true;
+      }
+      else {
+        return false;
+    } 
   }
-
-  
 }
