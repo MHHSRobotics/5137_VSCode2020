@@ -116,8 +116,8 @@ public final class Constants {
     public final static double shooterP = 0.0; //... 
     public final static double shooterI = 0.0;
     public final static double shooterD = 0.0;
-    public final static double limelightAngle = 29.0;
-    public final static double limelightAwayShooter = 10.2; //distance from limelight to shooter (depth, not height)
+    public final static double limelightAngle = 29.0; //angle of limelight (from horizontal) in degrees
+    public final static double limelightAwayShooter = 10.2; //distance from limelight to shooter (depth, not height) (in.)
     public final static double maxVeloShooter = 30500;
 
     //Preprogrammed shooting values for shooter
@@ -128,11 +128,11 @@ public final class Constants {
 
     //Storage
     //---------------------------------------//
-    public final static double storageSpeed = 0.5; //speed of the belts in AMPS!!!
+    public final static double storageSpeed = 0.5; //speed of the belts in PERCENT (future need to change to amps)!!!
     public final static int pixyLEDBrightness = 255;
     public final static int storageWaitTime = 2000; //wait time to allow belt motors to continue for until it finds the target (in ms)
 
-    public final static double climbTime = 0.1;
+    //public final static double climbTime = 0.1;
 
     //PID Control
     public final static int kPIDLoopIdx = 0;
