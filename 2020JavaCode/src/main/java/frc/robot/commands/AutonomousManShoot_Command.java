@@ -8,6 +8,7 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.Shooter_Subsystem;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 
 public class AutonomousManShoot_Command extends CommandBase {
 
@@ -15,7 +16,12 @@ public class AutonomousManShoot_Command extends CommandBase {
     int BallsShotCounter = 0;
     int shootXAmntBalls;
 
-    public AutonomousManShoot_Command(int shootXBalls) {
+    Timer m_timer;
+    double ourTime;
+
+    public AutonomousManShoot_Command(int shootXBalls,double time) {
+      m_timer = new Timer();
+      ourTime = time;
         shootXAmntBalls = shootXBalls;
         addRequirements(RobotContainer.shooter_Subsystem);
         addRequirements(RobotContainer.driveBase_Subsystem);
@@ -26,6 +32,8 @@ public class AutonomousManShoot_Command extends CommandBase {
   @Override
   public void initialize() {
       System.out.println("Shooter Be shootin");
+      m_timer.reset();
+      m_timer.start();
       //NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
       //table.getEntry("pipeline").setNumber(1);
   }
@@ -56,7 +64,7 @@ public class AutonomousManShoot_Command extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (BallsShotCounter == shootXAmntBalls) {
+    if (BallsShotCounter == shootXAmntBalls || m_timer.get() > ourTime) {
         return true;
       }
       else {

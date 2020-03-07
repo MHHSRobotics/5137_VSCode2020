@@ -192,7 +192,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    m_autonomousCommand.schedule();
+    //m_autonomousCommand.schedule();
     //This really doesn't belong here!!!
     /*
     switch (m_autoSelected) {

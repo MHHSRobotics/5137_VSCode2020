@@ -19,7 +19,7 @@ public class ManShootDriveBack_Command extends SequentialCommandGroup {
 
     public ManShootDriveBack_Command() {
         addCommands(
-            new AutonomousManShoot_Command(3),
+            new AutonomousManShoot_Command(3, 5.0),
             new AutoDriveStraight_Command(0.5, -1.0),
             new OnIntake_Command()
             );
