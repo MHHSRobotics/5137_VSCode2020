@@ -145,8 +145,11 @@ public class RobotContainer {
     public static JoystickButton YButton;
     public static JoystickButton SelectButton;
     public static JoystickButton StartButton;
-    public static JoystickButton LBButton; // Left bumper button
-    public static JoystickButton RBButton; // ...
+
+    public static JoystickButton AsLBButton; // Left bumper button
+    public static JoystickButton AsRBButton; // ...
+    public static JoystickButton XbLBButton;
+    public static JoystickButton XbRBButton;
 
     // Triggers
     public static Trigger XrTrigger;
@@ -305,23 +308,23 @@ public class RobotContainer {
         ArTrigger.whenInactive(new OffStorage_Command());
         ArTrigger.whenInactive(new OffIntake_Command());
 
-        RBButton = new JoystickButton(AssistantController, Constants.RButtonPort);
-        RBButton.whileActiveContinuous(new ReversedOnIntake_Command());
-        RBButton.whenInactive(new OffIntake_Command());
-        RBButton.whenInactive(new OffStorage_Command());
+        AsRBButton = new JoystickButton(AssistantController, Constants.RButtonPort);
+        AsRBButton.whileActiveContinuous(new ReversedOnIntake_Command());
+        AsRBButton.whenInactive(new OffIntake_Command());
+        AsRBButton.whenInactive(new OffStorage_Command());
 
-        LBButton = new JoystickButton(AssistantController, Constants.LBButtonPort);
-        LBButton.whileActiveContinuous(new OnIntake_Command());
-        LBButton.whenInactive(new OffIntake_Command());
-        LBButton.whenInactive(new OffStorage_Command());
+        AsLBButton = new JoystickButton(AssistantController, Constants.LBButtonPort);
+        AsLBButton.whileActiveContinuous(new OnIntake_Command());
+        AsLBButton.whenInactive(new OffIntake_Command());
+        AsLBButton.whenInactive(new OffStorage_Command());
         
-        AButton = new JoystickButton(XBoxController, Constants.AButtonPort);
-        AButton.whileActiveContinuous(new ClimbUp_Command());
-        AButton.whenInactive(new StopClimb_Command());
+        XbLBButton = new JoystickButton(XBoxController, Constants.AButtonPort);
+        XbLBButton.whileActiveContinuous(new ClimbUp_Command());
+        XbLBButton.whenInactive(new StopClimb_Command());
 
-        BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
-        BButton.whileActiveContinuous(new ClimbDown_Command());
-        BButton.whenInactive(new StopClimb_Command());
+        XbRBButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+        XbRBButton.whileActiveContinuous(new ClimbDown_Command());
+        XbRBButton.whenInactive(new StopClimb_Command());
 
         // Sets B Button to do Control Panel Command
         //BButton = new JoystickButton(XBoxController, Constants.BButtonPort);

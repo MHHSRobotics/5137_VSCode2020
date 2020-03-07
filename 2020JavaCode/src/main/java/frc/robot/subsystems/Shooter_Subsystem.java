@@ -160,7 +160,7 @@ public class Shooter_Subsystem extends SubsystemBase {
 
     public double veloCalc(double angle) {//returns value of shooter velocity in inches per second (returns NaN if negative)
         double exitVelo = 0.0;
-        distAway = findDistance() + Constants.limelightAwayShooter;
+        distAway = findDistance();
         double heightTraveledUp = Constants.towerHeight - Constants.shooterHeight; //needs changes
 
         //used to debug distance value
