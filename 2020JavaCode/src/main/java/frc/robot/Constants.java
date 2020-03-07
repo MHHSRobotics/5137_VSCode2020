@@ -32,6 +32,16 @@ public final class Constants {
     public final static int RYStickAxisPort = 5;
 
     //---------------------------------------//
+
+    //POV Values
+    /*
+        0 is not pushed, 360 is up, read as an angle of a unit circle
+    */
+
+    public final static int uDPadButtonValue = 0;
+    public final static int rDPadButtonValue = 90;
+    public final static int dDPadButtonValue = 180;
+
     //CAN Items
     //Note to BMoney: Don't change these names here on
     //Drive Base                                        //Labels: A=right & B=left
@@ -98,7 +108,7 @@ public final class Constants {
     public final static double shooterHeight = 37.0; //height of shooter in inches
     public final static double gravitationalAccel = -9.8; //acceleration due to gravity
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
-    public final static double turnRate = 0.15; //turn speed based on percentage of drive base output
+    public final static double turnRate = 0.5; //turn speed based on percentage of drive base output
     public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
     public final static double veloError = 250; //amount of variance in encoder units that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
@@ -106,9 +116,15 @@ public final class Constants {
     public final static double shooterP = 0.0; //... 
     public final static double shooterI = 0.0;
     public final static double shooterD = 0.0;
-    public final static double limelightAngle = 61.0;
+    public final static double limelightAngle = 29.0;
     public final static double limelightAwayShooter = 10.2; //distance from limelight to shooter (depth, not height)
-    public final static double maxVeloShooter = 32500;
+    public final static double maxVeloShooter = 30500;
+
+    //Preprogrammed shooting values for shooter
+    public final static double InitiationLineShooterVelo = 21000; //velocity to shoot at from initiation line (in MAG units, see maxVeloShooter for max)
+    public final static double FrontTrenchShooterVelo = 27500;
+    public final static double BackTrenchShooterVelo = maxVeloShooter;
+
 
     //Storage
     //---------------------------------------//
@@ -125,4 +141,9 @@ public final class Constants {
     //Sensors
     public final static int LimitSwitchUpperDIOPort = 0;
     public final static int LimitSwitchLowerDIOPort = 2;
+
+    //Autonomous
+    public final static String ShootDriveBack = "kShootDriveBack";
+    public final static String JustDriveBack = "kDriveBack";
+    public final static String ManShootDriveBack = "kManShootDriveBack";
 }

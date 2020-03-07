@@ -49,10 +49,7 @@ public class Shooter_Subsystem extends SubsystemBase {
     public void periodic() {
         
         distAway = findDistance();
-        //System.out.println("Distance away is: " + distAway);
-            //shooterTalon.set(motorSpeed);
-            //shooterFollowerTalon.set(motorSpeed);
-        //shooterFollowerTalon.set(motorSpeed);
+        System.out.println("Distance away is: " + distAway); 
         table = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
@@ -78,9 +75,26 @@ public class Shooter_Subsystem extends SubsystemBase {
     public boolean setVelo(double angle, boolean manual) { //return when velocity is running optimally 
         double setVelo = convertLinearVeloToMAG(veloCalc(angle)); 
 
-        double controllerMAGVelo = Constants.maxVeloShooter * XBoxController.getRawAxis(Constants.LTAxisPort);
+        double controllerMAGVelo;
+        
 
         if (manual) {
+
+            if (XBoxController.getPOV() == Constants.uDPadButtonValue) {
+                controllerMAGVelo = Constants.InitiationLineShooterVelo;
+            }
+            else if (XBoxController.getPOV() == Constants.rDPadButtonValue) {
+                controllerMAGVelo = Constants.FrontTrenchShooterVelo;
+            }
+            else if (XBoxController.getPOV() == Constants.dDPadButtonValue) {
+                controllerMAGVelo = Constants.BackTrenchShooterVelo;
+            }
+            else if (XBoxController.getRawAxis(Constants.LTAxisPort) > 0.1) {
+                controllerMAGVelo = Constants.maxVeloShooter * XBoxController.getRawAxis(Constants.LTAxisPort);
+            }
+            else {
+                controllerMAGVelo = Constants.InitiationLineShooterVelo;
+            }
 
             shooterTalon.set(ControlMode.Velocity, controllerMAGVelo);
             shooterFollowerTalon.set(ControlMode.Follower, Constants.shooterCAN);
@@ -190,8 +204,10 @@ public class Shooter_Subsystem extends SubsystemBase {
 
         //shooter is 10.2 in away from limelight (as of 3/4/2020)
 
-        double angle = Math.toRadians(Robot.targety + Constants.limelightAngle);
-        return ((Constants.towerHeight - Constants.limelightHeight) / Math.tan(angle)) + Constants.limelightAwayShooter;
+        double targety = Math.toDegrees(Robot.targety);
+        System.out.println("Target y is: " + targety);
+        double angle = Math.toRadians(targety + Constants.limelightAngle);
+        return ((Constants.towerHeight - Constants.limelightHeight) / (Math.tan(angle))) + Constants.limelightAwayShooter;
     }
     
     public boolean checkReadyShoot(double angle, boolean horizontalTurnEnabled, boolean manual) {

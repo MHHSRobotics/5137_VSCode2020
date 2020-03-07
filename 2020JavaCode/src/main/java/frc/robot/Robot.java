@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commandgroups.StartCenter_TurnShootTurnPickup;
+import frc.robot.commandgroups.ShootDriveBack_Command;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
 
   //private Command autoCommand; // Need to use for auto? Does this act like a placeholder?
 
-  public StartCenter_TurnShootTurnPickup startCenter_TurnShootTurnPickup;
+  public ShootDriveBack_Command startCenter_TurnShootTurnPickup;
 
   public Command m_autonomousCommand;
 
@@ -43,9 +43,11 @@ public class Robot extends TimedRobot {
   public static double targetarea;
 
   // Template Declarations, CHANGES NEEDED?
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private static final String kStartCenter_TurnShoot = "kStartCenter_TurnShoot";
+  //private static final String kDefaultAuto = "Default";
+  //private static final String kCustomAuto = "My Auto";
+  public static final String kShootDriveBack = Constants.ShootDriveBack;
+  public static final String kDriveBack = Constants.JustDriveBack;
+  public static final String kManShootDriveBack = Constants.ManShootDriveBack;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -73,9 +75,12 @@ public class Robot extends TimedRobot {
      * ExistingRobot.m_rightDrive.setInverted(true);
      */
     // Default template stuff
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    m_chooser.addOption("StartCenter_TurnShoot...", kStartCenter_TurnShoot);
+    //m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    //m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.setDefaultOption("ManShootThenDrive", kManShootDriveBack);
+    m_chooser.addOption("ShootDriveBack", kShootDriveBack);
+    m_chooser.addOption("DriveBack", kDriveBack);
+    
     SmartDashboard.putData("Auto choices", m_chooser);
   }
 
@@ -159,7 +164,6 @@ public class Robot extends TimedRobot {
                                   * robot drives itself without any input from human drivers.
                                   */
     m_autoSelected = m_chooser.getSelected();
-    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
     //CommandScheduler.getInstance().schedule(new StartCenter_TurnShootTurnPickup());
@@ -172,10 +176,11 @@ public class Robot extends TimedRobot {
      * { m_autonomousCommand.schedule(); }
      */
 
-     m_autonomousCommand = RobotContainer.getAutonomousCommand();
+     m_autonomousCommand = RobotContainer.getAutonomousCommand(m_autoSelected);
 
      if (m_autonomousCommand != null) {
-        m_autonomousCommand.schedule(); }
+        m_autonomousCommand.schedule(); 
+      }
   }
 
   /**
@@ -187,6 +192,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    m_autonomousCommand.schedule();
     //This really doesn't belong here!!!
     /*
     switch (m_autoSelected) {
@@ -207,9 +213,9 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    //if (m_autonomousCommand != null) { //m_autonomousCommand is a command
-    //m_autonomousCommand.cancel();
-    // }
+    if (m_autonomousCommand != null) { //m_autonomousCommand is a command
+    m_autonomousCommand.cancel();
+     }
   }
 
   /**

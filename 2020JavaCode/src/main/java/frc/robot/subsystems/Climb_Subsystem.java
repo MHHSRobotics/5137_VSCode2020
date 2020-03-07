@@ -27,7 +27,7 @@ public class Climb_Subsystem extends SubsystemBase {
     public void goUp() { //true (1) is not pressed, false is pressed
         System.out.println("UPPER SWITCH IS GOING UP:" + limitSwitchUpper.get());
         if (limitSwitchUpper.get()) { //ready to climb
-            climbTalon.set(-0.5);
+            climbTalon.set(-0.85);
         }        
         else {//limitSwitch is good
             climbTalon.set(0);
@@ -37,7 +37,7 @@ public class Climb_Subsystem extends SubsystemBase {
     public void goDown() {
         System.out.println("Lower switch is going down: " + limitSwitchLower.get());
         if (limitSwitchLower.get()) {
-            climbTalon.set(0.6);
+            climbTalon.set(0.8);
         }
         else { //limitSwitch is good
             climbTalon.set(0);

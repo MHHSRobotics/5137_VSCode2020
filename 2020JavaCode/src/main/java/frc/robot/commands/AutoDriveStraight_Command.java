@@ -7,14 +7,15 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
-public class AutoDriveForward_Command extends CommandBase {
+public class AutoDriveStraight_Command extends CommandBase { //drives robot Forward (positive speed) or backward (negative speed) for a certain time
 
     double m_time;
     double m_speed;
 
     Timer m_timer;
     
-    public AutoDriveForward_Command(double time, double speed) {
+    public AutoDriveStraight_Command(double time, double speed) {
+        m_timer = new Timer();
         m_time = time;
         m_speed = speed;
         addRequirements(RobotContainer.driveBase_Subsystem);

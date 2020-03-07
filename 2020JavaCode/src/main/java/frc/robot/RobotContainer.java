@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commandgroups.StartCenter_TurnShootTurnPickup;
+import frc.robot.commandgroups.DriveBack_Command;
+import frc.robot.commandgroups.ManShootDriveBack_Command;
+import frc.robot.commandgroups.ShootDriveBack_Command;
 import frc.robot.commands.ArcadeDrive;
 import frc.robot.commands.AutoShoot_Command;
 import frc.robot.commands.ClimbDown_Command;
@@ -256,7 +258,7 @@ public class RobotContainer {
 
         //Automagic Shooter Control
         XrTrigger = new Trigger(booleanSupplyXBoxRT);
-        XrTrigger.whileActiveContinuous(new AutoShoot_Command(driveBase_Subsystem));//makes automatic shooter engage
+        XrTrigger.whileActiveContinuous(new AutoShoot_Command());//makes automatic shooter engage
         // NOTE: this version of whileActiveContinuous override
         // any and all drive base control. May need to change.
         XrTrigger.whileActiveOnce(new ArcadeDrive()); //returns regular drivebase control (will toggle between regular and shooter driving)
@@ -269,6 +271,27 @@ public class RobotContainer {
         XlTrigger.whileActiveOnce(new ArcadeDrive()); //may need to change
         XlTrigger.whenInactive(new StahpTheShoot_Command());
         XlTrigger.whenInactive(new StopShootStorage_Command());
+
+        //Manual Shooter Control (upDpad = initiation line) (rDpad = front trench) (dDpad = back trench)
+
+        //Up DPAD
+        uDPadButton = new POVButton(XBoxController, Constants.uDPadButtonValue); //uDPadButtonValue
+        uDPadButton.whileActiveContinuous(new ManShoot_Command()); //makes manual shooter engage
+        uDPadButton.whileActiveOnce(new ArcadeDrive()); //may need to change
+        uDPadButton.whenInactive(new StahpTheShoot_Command());
+        uDPadButton.whenInactive(new StopShootStorage_Command());
+
+        rDPadButton = new POVButton(XBoxController, Constants.rDPadButtonValue);
+        rDPadButton.whileActiveContinuous(new ManShoot_Command()); //makes manual shooter engage
+        rDPadButton.whileActiveOnce(new ArcadeDrive()); //may need to change
+        rDPadButton.whenInactive(new StahpTheShoot_Command());
+        rDPadButton.whenInactive(new StopShootStorage_Command());
+
+        dDPadButton = new POVButton(XBoxController, Constants.dDPadButtonValue);
+        dDPadButton.whileActiveContinuous(new ManShoot_Command()); //makes manual shooter engage
+        dDPadButton.whileActiveOnce(new ArcadeDrive()); //may need to change
+        dDPadButton.whenInactive(new StahpTheShoot_Command());
+        dDPadButton.whenInactive(new StopShootStorage_Command());
 
         AlTrigger = new Trigger(booleanSupplyAssistantLT);
         AlTrigger.whileActiveContinuous(new OnIntake_Command());
@@ -300,15 +323,9 @@ public class RobotContainer {
         BButton.whileActiveContinuous(new ClimbDown_Command());
         BButton.whenInactive(new StopClimb_Command());
 
-        //rTrigger.whenInactive(new Storage_Command()); //makes just top belt go
-        //rTrigger.whenInactive(new StahpTheShoot_Command()); //stops the shooter (sets talons to 0)
-
         // Sets B Button to do Control Panel Command
         //BButton = new JoystickButton(XBoxController, Constants.BButtonPort);
         //BButton.whenHeld(new ControlPanel_Command());
-        
-        //XButton = new JoystickButton(XBoxController, Constants.XButtonPort);
-        //XButton.toggleWhenPressed(new Intake_Command());
         
     }
 
@@ -432,24 +449,28 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     
-    public static Command getAutonomousCommand() {
+    public static Command getAutonomousCommand(String m_autoSelected) {
     // An ExampleCommand will run in autonomous
 
+    ShootDriveBack_Command shootDriveBack = new ShootDriveBack_Command();
+    DriveBack_Command driveBack_Command = new DriveBack_Command();
+    ManShootDriveBack_Command manShootDriveBack_Command = new ManShootDriveBack_Command();
+
     //This might go here...
-    /*
+    
     switch (m_autoSelected) {
-        case kCustomAuto:
-          // Put custom auto code here
-          break;
-        case kDefaultAuto:
+        case (Constants.ShootDriveBack): //command to shoot 3 balls, then drive back for a half-second
+          return shootDriveBack;
+        case (Constants.JustDriveBack):
+          return driveBack_Command;
+        case (Constants.ManShootDriveBack):
+          return manShootDriveBack_Command;
         default:
-          // Put default auto code here
-          break;
-        } */
+          return manShootDriveBack_Command;
 
     //Does the data type need to be a command? Or is this good?
-    StartCenter_TurnShootTurnPickup startCenter_TurnShootTurnPickup = new StartCenter_TurnShootTurnPickup(driveBase_Subsystem);
-    return startCenter_TurnShootTurnPickup;
+
     } 
 
+    }
 }
