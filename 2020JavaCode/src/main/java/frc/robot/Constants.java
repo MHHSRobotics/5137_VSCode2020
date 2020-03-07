@@ -106,11 +106,11 @@ public final class Constants {
     public final static double towerHeight = 98.25; //height of power tower in inches
     public final static double limelightHeight = 10.5; //height of limelight in inches
     public final static double shooterHeight = 37.0; //height of shooter in inches
-    public final static double gravitationalAccel = -9.8; //acceleration due to gravity
+    public final static double gravitationalAccel = -386.220472; //acceleration due to gravity (in in./s^2)
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
     public final static double turnRate = 0.5; //turn speed based on percentage of drive base output
     public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
-    public final static double veloError = 250; //amount of variance in encoder units that the motor will allow to shoot
+    public final static double veloError = 4000; //amount of variance in encoder units that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
     public final static double shooterF = 0.0; //F Val for shooter PID
     public final static double shooterP = 0.0; //... 

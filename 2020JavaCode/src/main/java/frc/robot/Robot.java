@@ -130,9 +130,9 @@ public class Robot extends TimedRobot {
     System.out.println("LimelightY in Degrees: " + targety);
     System.out.println("LimelightArea in Degrees: " + targetarea); */
 
-    targety = degrees2Radians(targety);
-    targetx = degrees2Radians(targetx);
-    targetarea = degrees2Radians(targetarea);
+    //targety = degrees2Radians(targety);
+    //targetx = degrees2Radians(targetx);
+    //targetarea = degrees2Radians(targetarea);
 
     /*
     System.out.println("LimelightX in Radians: " + targetx);

@@ -204,7 +204,9 @@ public class Shooter_Subsystem extends SubsystemBase {
 
         //shooter is 10.2 in away from limelight (as of 3/4/2020)
 
-        double targety = Math.toDegrees(Robot.targety);
+        //Only do this if robotPeriodic in robot.java changes primary value to radians
+        //double targety = Math.toDegrees(Robot.targety);
+        double targety = Robot.targety;
         System.out.println("Target y is: " + targety);
         double angle = Math.toRadians(targety + Constants.limelightAngle);
         return ((Constants.towerHeight - Constants.limelightHeight) / (Math.tan(angle))) + Constants.limelightAwayShooter;
