@@ -14,6 +14,8 @@ public class Climb_Subsystem extends SubsystemBase {
 
     DigitalInput limitSwitchUpper;
     DigitalInput limitSwitchLower;
+
+    public boolean allowed;
     
     public Climb_Subsystem() {
         limitSwitchUpper = RobotContainer.LimitSwitchUpper;
@@ -22,12 +24,18 @@ public class Climb_Subsystem extends SubsystemBase {
     }
 
     public void periodic() {
+        if (limitSwitchLower.get() && allowed) { //if the lower limit switch isn't pressed (naitive)
+            climbTalon.set(0.1);
+        }
+        else {
+            climbTalon.set(0);
+        }
     }
 
     public void goUp() { //true (1) is not pressed, false is pressed
         System.out.println("UPPER SWITCH IS GOING UP:" + limitSwitchUpper.get());
         if (limitSwitchUpper.get()) { //ready to climb
-            climbTalon.set(-0.85);
+            climbTalon.set(-1.0);
         }        
         else {//limitSwitch is good
             climbTalon.set(0);
@@ -37,7 +45,7 @@ public class Climb_Subsystem extends SubsystemBase {
     public void goDown() {
         System.out.println("Lower switch is going down: " + limitSwitchLower.get());
         if (limitSwitchLower.get()) {
-            climbTalon.set(0.8);
+            climbTalon.set(1.0);
         }
         else { //limitSwitch is good
             climbTalon.set(0);

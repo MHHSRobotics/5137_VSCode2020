@@ -314,15 +314,15 @@ public class RobotContainer {
         AsRBButton.whenInactive(new OffStorage_Command());
 
         AsLBButton = new JoystickButton(AssistantController, Constants.LBButtonPort);
-        AsLBButton.whileActiveContinuous(new OnIntake_Command());
+        AsLBButton.whileActiveContinuous(new UpwardStorage_Command());
         AsLBButton.whenInactive(new OffIntake_Command());
         AsLBButton.whenInactive(new OffStorage_Command());
         
-        XbLBButton = new JoystickButton(XBoxController, Constants.AButtonPort);
+        XbLBButton = new JoystickButton(XBoxController, Constants.LBButtonPort);
         XbLBButton.whileActiveContinuous(new ClimbUp_Command());
         XbLBButton.whenInactive(new StopClimb_Command());
 
-        XbRBButton = new JoystickButton(XBoxController, Constants.BButtonPort);
+        XbRBButton = new JoystickButton(XBoxController, Constants.RButtonPort);
         XbRBButton.whileActiveContinuous(new ClimbDown_Command());
         XbRBButton.whenInactive(new StopClimb_Command());
 

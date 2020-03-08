@@ -95,7 +95,7 @@ public final class Constants {
     //Intake
     //---------------------------------------//
     public final static double startingBallCount = 3.0;
-    public final static double intakeVictorOutput = 0.3;
+    public final static double intakeVictorOutput = 0.35;
     public final static int intakeWaitTime = 10; //wait time in ms to see if the storage is full
 
     //Shooter
@@ -108,7 +108,7 @@ public final class Constants {
     public final static double shooterHeight = 37.0; //height of shooter in inches (from the ground)
     public final static double gravitationalAccel = -386.220472; //acceleration due to gravity (in in./s^2)
     public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
-    public final static double turnRate = 0.5; //turn speed based on percentage of drive base output
+    public final static double turnRate = 0.2; //turn speed based on percentage of drive base output
     public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
     public final static double veloError = 4096; //amount of variance in encoder units that the motor will allow to shoot
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
@@ -128,7 +128,7 @@ public final class Constants {
 
     //Storage
     //---------------------------------------//
-    public final static double storageSpeed = 0.5; //speed of the belts in PERCENT (future need to change to amps)!!!
+    public final static double storageSpeed = 0.85; //speed of the belts in PERCENT (future need to change to amps)!!!
     public final static int pixyLEDBrightness = 255;
     public final static int storageWaitTime = 2000; //wait time to allow belt motors to continue for until it finds the target (in ms)
 

@@ -7,9 +7,11 @@
 
 package frc.robot;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +29,8 @@ import frc.robot.commandgroups.ShootDriveBack_Command;
 public class Robot extends TimedRobot {
   public static RobotContainer ExistingRobot;
 
-  //private Command autoCommand; // Need to use for auto? Does this act like a placeholder?
+  // private Command autoCommand; // Need to use for auto? Does this act like a
+  // placeholder?
 
   public ShootDriveBack_Command startCenter_TurnShootTurnPickup;
 
@@ -43,13 +46,15 @@ public class Robot extends TimedRobot {
   public static double targetarea;
 
   // Template Declarations, CHANGES NEEDED?
-  //private static final String kDefaultAuto = "Default";
-  //private static final String kCustomAuto = "My Auto";
+  // private static final String kDefaultAuto = "Default";
+  // private static final String kCustomAuto = "My Auto";
   public static final String kShootDriveBack = Constants.ShootDriveBack;
   public static final String kDriveBack = Constants.JustDriveBack;
   public static final String kManShootDriveBack = Constants.ManShootDriveBack;
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  public static UsbCamera driverCam;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -65,9 +70,15 @@ public class Robot extends TimedRobot {
      * is call RobotContainer. This means it calls the method RobotContainer().
      * Let's head over to it right now to see what it's doing.
      */
-    
+
     ExistingRobot = new RobotContainer();
     System.out.println("Created RobotContainer.");
+
+    //Camera setup for RIO
+    driverCam = edu.wpi.first.cameraserver.CameraServer.getInstance().startAutomaticCapture();
+
+    driverCam.setResolution(240, 180);
+    driverCam.setFPS(30);
 
     /*
      * //Possibly add inverted method for all motors (TODO need to test!!!)

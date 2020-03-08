@@ -18,13 +18,14 @@ public class ClimbDown_Command extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    RobotContainer.climb_Subsystem.allowed = false;
     RobotContainer.climb_Subsystem.goDown();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {//necessary
-    
+    RobotContainer.climb_Subsystem.allowed = true;
   }
 
   // Returns true when the command should end.
