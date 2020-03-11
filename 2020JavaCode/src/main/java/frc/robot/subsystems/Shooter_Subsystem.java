@@ -53,7 +53,7 @@ public class Shooter_Subsystem extends SubsystemBase {
         table = NetworkTableInstance.getDefault().getTable("limelight");
     }
 
-    public boolean shoot(double angle, boolean overrideDB, boolean manual) { //called by command (constantly)  
+    public boolean shoot(double angle, boolean overrideDB, boolean manual, boolean autonomous) { //called by command (constantly)  
         LimelightKnowsManual = manual;  
         if (LimelightKnowsManual) {
             table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 isnt limelight, 2 is 
@@ -64,15 +64,16 @@ public class Shooter_Subsystem extends SubsystemBase {
         else {
             table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 isnt limelight, 2 is 
         }  
-        return checkReadyShoot(angle, overrideDB, manual);
+        return checkReadyShoot(angle, overrideDB, manual, autonomous);
     }
 
     public void endShoot() { 
         shooterTalon.set(ControlMode.Velocity, 0);
         shooterFollowerTalon.set(ControlMode.Velocity, 0); 
+        table.getEntry("pipeline").setNumber(2); //sets pipeline number 1-9. 1 isnt limelight, 2 is (new*)
     }
 
-    public boolean setVelo(double angle, boolean manual) { //return when velocity is running optimally 
+    public boolean setVelo(double angle, boolean manual, boolean autonomous) { //return when velocity is running optimally 
         double setVelo = convertLinearVeloToMAG(veloCalc(angle)); 
 
         double controllerMAGVelo;
@@ -92,8 +93,11 @@ public class Shooter_Subsystem extends SubsystemBase {
             else if (XBoxController.getRawAxis(Constants.LTAxisPort) > 0.1) {
                 controllerMAGVelo = Constants.maxVeloShooter * XBoxController.getRawAxis(Constants.LTAxisPort);
             }
-            else {
+            else if (autonomous) {
                 controllerMAGVelo = Constants.InitiationLineShooterVelo;
+            }
+            else {
+                controllerMAGVelo = 0;
             }
 
             shooterTalon.set(ControlMode.Velocity, controllerMAGVelo);
@@ -212,8 +216,8 @@ public class Shooter_Subsystem extends SubsystemBase {
         return ((Constants.towerHeight - Constants.limelightHeight) / (Math.tan(angle))) + Constants.limelightAwayShooter;
     }
     
-    public boolean checkReadyShoot(double angle, boolean horizontalTurnEnabled, boolean manual) {
-        velocityRunningGood = setVelo(angle, manual);
+    public boolean checkReadyShoot(double angle, boolean horizontalTurnEnabled, boolean manual, boolean autonomous) {
+        velocityRunningGood = setVelo(angle, manual, autonomous);
         if (horizontalTurnEnabled) {
             horizontalTurnGood = RobotContainer.driveBase_Subsystem.orientHorizontalTurn();
         }

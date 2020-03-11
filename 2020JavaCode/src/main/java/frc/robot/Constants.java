@@ -95,7 +95,7 @@ public final class Constants {
     //Intake
     //---------------------------------------//
     public final static double startingBallCount = 3.0;
-    public final static double intakeVictorOutput = 0.35;
+    public final static double intakeVictorOutput = 0.3;
     public final static int intakeWaitTime = 10; //wait time in ms to see if the storage is full
 
     //Shooter

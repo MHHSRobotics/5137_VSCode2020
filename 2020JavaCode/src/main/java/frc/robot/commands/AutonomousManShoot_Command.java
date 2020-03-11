@@ -19,7 +19,7 @@ public class AutonomousManShoot_Command extends CommandBase {
     Timer m_timer;
     double ourTime;
 
-    public AutonomousManShoot_Command(int shootXBalls,double time) {
+    public AutonomousManShoot_Command(int shootXBalls, double time) {
       m_timer = new Timer();
       ourTime = time;
         shootXAmntBalls = shootXBalls;
@@ -41,7 +41,7 @@ public class AutonomousManShoot_Command extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (RobotContainer.shooter_Subsystem.shoot(Constants.shooterAngle, false, true) == true) {//ready to shoot {
+    if (RobotContainer.shooter_Subsystem.shoot(Constants.shooterAngle, false, true, true) == true) {//ready to shoot {
       RobotContainer.storage_Subsystem.store(true, true, false, false, false);
       if (dontSpam) {
         BallsShotCounter++;

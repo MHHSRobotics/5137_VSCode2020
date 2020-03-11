@@ -22,6 +22,7 @@ public class StahpTheShoot_Command extends CommandBase {
   @Override
   public void execute() {
     RobotContainer.shooter_Subsystem.endShoot();
+    //RobotContainer.storage_Subsystem.store(true, false, false, false, false);
   }
 
   // Called once the command ends or is interrupted.
