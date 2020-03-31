@@ -31,6 +31,9 @@ public class Shooter_Subsystem extends SubsystemBase {
     boolean velocityRunningGood;
     boolean LimelightKnowsManual;
 
+    double lastVelo;
+    int index;
+
     NetworkTable table;
 
     public Shooter_Subsystem() {
@@ -74,11 +77,18 @@ public class Shooter_Subsystem extends SubsystemBase {
     }
 
     public boolean setVelo(double angle, boolean manual, boolean autonomous) { //return when velocity is running optimally 
-        double setVelo = convertLinearVeloToMAG(veloCalc(angle)); 
-
+        double setVelo = 0;
+        if (index < Constants.sampleSizeShooter) {
+            setVelo = lastVelo;
+            index++;
+        }
+        else {
+            setVelo = convertLinearVeloToMAG(veloCalc(angle));
+            index = 0;
+        }
+        
         double controllerMAGVelo;
         
-
         if (manual) {
 
             if (XBoxController.getPOV() == Constants.uDPadButtonValue) {
@@ -118,9 +128,11 @@ public class Shooter_Subsystem extends SubsystemBase {
             }  
         }
         else { //AutoShootingAlgorithm
+
+            lastVelo = setVelo;
             
             shooterTalon.set(ControlMode.Velocity, setVelo);
-            shooterFollowerTalon.set(ControlMode.Velocity, setVelo); 
+            shooterFollowerTalon.set(ControlMode.Follower, Constants.shooterCAN); 
         
             /*
             double motorOutput = shooterTalon.getMotorOutputPercent();
@@ -152,13 +164,24 @@ public class Shooter_Subsystem extends SubsystemBase {
 
             double encoderValue = shooterTalon.getSelectedSensorVelocity();
 
-            if ((setVelo <= (encoderValue + Constants.veloError)) && 
-            (setVelo >= (encoderValue - Constants.veloError))) {
-            return true; 
-            }
+            if (setVelo > 0) { //if not null
+                if (setVelo <= (encoderValue + Constants.AutoveloError) && 
+            setVelo >= (encoderValue - Constants.AutoveloError)) {
+                    return true; 
+                }
+                else {
+                    return false;
+                }
+            } 
             else {
-            return false;
-            }  
+                if (lastVelo <= (encoderValue + Constants.AutoveloError) && 
+            lastVelo >= (encoderValue - Constants.AutoveloError)) {
+                    return true; 
+                }
+                else {
+                    return false;
+                }
+            } 
         }
     }
 

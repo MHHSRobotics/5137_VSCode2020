@@ -102,15 +102,16 @@ public final class Constants {
     //---------------------------------------//
     public final static int packetsAmnt = 180; //amount of packets gathered to find an average limelight value. Used for all types of limelight values. Packets should be in increments of ~18.
     //---------------------------------------//
-    public final static double shooterAngle = 25.0; //angle of shooter in degrees of the horizontal (right now is (69.0 * PI) / 180 radians)
+    public final static double shooterAngle = 26.9; //angle of shooter in degrees of the horizontal (right now is (69.0 * PI) / 180 radians)
     public final static double towerHeight = 98.25; //height of power tower in inches
     public final static double limelightHeight = 26.5; //height of limelight in inches (from the ground)
     public final static double shooterHeight = 37.0; //height of shooter in inches (from the ground)
     public final static double gravitationalAccel = -386.220472; //acceleration due to gravity (in in./s^2)
-    public final static double marginAngleError = 0.1; //amount in degrees that robot is allowed to be offset from target when shooting
+    public final static double marginAngleError = 1.25; //amount in degrees that robot is allowed to be offset from target when shooting
     public final static double turnRate = 0.2; //turn speed based on percentage of drive base output
-    public final static double turnSpeed = 1.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
-    public final static double veloError = 4096; //amount of variance in encoder units that the motor will allow to shoot
+    public final static double turnSpeed = 40.0; //turn speed based on porportion from targetx (doesn't oscolate) (maximum angle is 28 degrees)
+    public final static double veloError = 1 * 4096; //amount of variance in encoder units that the motor will allow to shoot
+    public final static double AutoveloError = 10 * 4096;
     public final static double currentShooterRadius = 3.0 * 0.0254; //radius of the shooter wheel (in meters) (0.2032 is conversion factor)
     public final static double shooterF = 0.0; //F Val for shooter PID
     public final static double shooterP = 0.0; //... 
@@ -119,6 +120,7 @@ public final class Constants {
     public final static double limelightAngle = 29.0; //angle of limelight (from horizontal) in degrees
     public final static double limelightAwayShooter = 10.2; //distance from limelight to shooter (depth, not height) (in.)
     public final static double maxVeloShooter = 30500;
+    public final static int sampleSizeShooter = 5; //amount of samples of distances while shooting (50 = 1 time per sec) (less # is less samples, but greater speed)
 
     //Preprogrammed shooting values for shooter
     public final static double InitiationLineShooterVelo = 21000; //velocity to shoot at from initiation line (in MAG units, see maxVeloShooter for max)
